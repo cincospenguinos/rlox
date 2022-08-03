@@ -31,11 +31,11 @@ module Rlox
     end
 
     def chars_consumed
-      1
+      token.string.size
     end
   end
 
-  class OperatorTokenizer
+  class OperatorTokenizer < SingleCharTokenizer
     OPERATOR_TOKENS = {
       /\A!\z/ => Token.new(type: :bang, string: "!"),
       /\A!=\z/ => Token.new(type: :bang_equal, string: "!="),
@@ -47,11 +47,9 @@ module Rlox
       /\A>=\z/ => Token.new(type: :greater_equal, string: ">=")
     }.freeze
 
-    attr_reader :tokenizer
-
     def initialize(tokenizer)
+      super(tokenizer)
       @token = nil
-      @tokenizer = tokenizer
     end
 
     def token
@@ -60,10 +58,6 @@ module Rlox
       @token = operator_for(tokenizer.current_slice(1))
       @token = operator_for(tokenizer.current_slice) if @token.nil?
       @token
-    end
-
-    def chars_consumed
-      @token.string.size
     end
 
     private
