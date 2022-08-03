@@ -68,4 +68,12 @@ class ScannerTest < Test::Unit::TestCase
     assert scanner.errors.any?
     assert scanner.errors.first.to_s.include?("unclosed string")
   end
+
+  test "scanner emits number literals" do
+    expected_strings = %w(1 12 12.2 0.312341)
+    scanner = Rlox::Scanner.new('1 12 12.2 0.312341')
+    tokens = scanner.scan_tokens
+    assert tokens.map(&:type).all? { |t| t == :number }
+    assert_equal expected_strings, tokens.map(&:string)
+  end
 end

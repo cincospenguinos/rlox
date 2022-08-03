@@ -67,7 +67,7 @@ module Rlox
 
     def tokenizers
       [SingleCharTokenizer.new(self), OperatorTokenizer.new(self), SlashOrCommentTokenizer.new(self),
-       StringTokenizer.new(self)]
+       StringTokenizer.new(self), NumberTokenizer.new(self)]
     end
   end
 
