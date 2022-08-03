@@ -35,10 +35,7 @@ module Rlox
     end
   end
 
-  # Tokenizer
-  #
-  # Tokenizes provided source code into tokens
-  class Tokenizer
+  class OperatorTokenizer
     OPERATOR_TOKENS = {
       /\A!\z/ => Token.new(type: :bang, string: "!"),
       /\A!=\z/ => Token.new(type: :bang_equal, string: "!="),
@@ -50,6 +47,43 @@ module Rlox
       /\A>=\z/ => Token.new(type: :greater_equal, string: ">=")
     }.freeze
 
+    attr_reader :tokenizer
+
+    def initialize(tokenizer)
+      @token = nil
+      @tokenizer = tokenizer
+    end
+
+    def token
+      return @token unless @token.nil?
+
+      @token = operator_for(tokenizer.current_slice(1))
+      @token = operator_for(tokenizer.current_slice) if @token.nil?
+      @token
+    end
+
+    def chars_consumed
+      @token.string.size
+    end
+
+    private
+
+    def operator_token
+      token = operator_for(current_slice(1))
+      token = operator_for(current_slice) if token.nil?
+      @current_index += 1 if !token.nil? && token.string.size > 1
+      token
+    end
+
+    def operator_for(string)
+      OPERATOR_TOKENS.select { |re, _| re =~ string }.values[0] || nil
+    end
+  end
+
+  # Tokenizer
+  #
+  # Tokenizes provided source code into tokens
+  class Tokenizer
     COMMENT_PATTERN = %r{\A//[\w\s]+\z}.freeze
 
     attr_reader :source
@@ -62,8 +96,15 @@ module Rlox
     end
 
     def scan
-      token = SingleCharTokenizer.new(self).token
-      token = operator_token if token.nil?
+      token = nil
+      tokenizers = [SingleCharTokenizer.new(self), OperatorTokenizer.new(self)]
+      tokenizers.each do |tokenizer|
+        if (token = tokenizer.token)
+          @current_index += tokenizer.chars_consumed - 1
+          break
+        end
+      end
+
       token = slash_or_comment_token if token.nil?
       @start_index = @current_index if !token.nil? || current_slice =~ /\s+/
       token
@@ -95,23 +136,6 @@ module Rlox
     end
 
     private
-
-    def single_char_token
-      return SINGLE_CHAR_TOKENS[current_slice].clone if SINGLE_CHAR_TOKENS.keys.include?(current_slice)
-
-      nil
-    end
-
-    def operator_token
-      token = operator_for(current_slice(1))
-      token = operator_for(current_slice) if token.nil?
-      @current_index += 1 if !token.nil? && token.string.size > 1
-      token
-    end
-
-    def operator_for(string)
-      OPERATOR_TOKENS.select { |re, _| re =~ string }.values[0] || nil
-    end
 
     def slash_or_comment_token
       return nil unless current_slice == "/"
