@@ -110,14 +110,20 @@ module Rlox
 
       peek_amt = 1
       until tokenizer.at_end?(peek_amt) || !@token.nil?
-        slice = tokenizer.current_slice(peek_amt)
-        @token = Token.new(type: :string, string: slice) if slice.end_with?('"')
+        acquire_token_at(peek_amt)
         peek_amt += 1
       end
 
       raise Rlox::ScanError, "unclosed string: #{tokenizer.current_slice(peek_amt)}" if @token.nil?
 
       @token
+    end
+
+    private
+
+    def acquire_token_at(peek_amt)
+      slice = tokenizer.current_slice(peek_amt)
+      @token = Token.new(type: :string, string: slice) if slice.end_with?('"')
     end
   end
 end
