@@ -34,8 +34,8 @@ module Rlox
       self
     end
 
-    def at_end?
-      @current_index >= source.length
+    def at_end?(peek_amount = 0)
+      @current_index + peek_amount > source.length
     end
 
     def leftovers
@@ -57,7 +57,8 @@ module Rlox
     private
 
     def tokenizers
-      [SingleCharTokenizer.new(self), OperatorTokenizer.new(self), SlashOrCommentTokenizer.new(self)]
+      [SingleCharTokenizer.new(self), OperatorTokenizer.new(self), SlashOrCommentTokenizer.new(self),
+        StringTokenizer.new(self)]
     end
   end
 

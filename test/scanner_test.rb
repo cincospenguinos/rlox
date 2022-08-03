@@ -31,6 +31,13 @@ class ScannerTest < Test::Unit::TestCase
     assert_equal :slash, tokens.first.type
   end
 
+  test "tokenizes strings" do
+    tokens = Rlox::Scanner.new('"this is a string"').scan_tokens
+    assert_equal 1, tokens.size
+    assert_equal :string, tokens.first.type
+    assert_equal '"this is a string"', tokens.first.string
+  end
+
   test "scanner ignores whitespace" do
     str = "  +
       \r

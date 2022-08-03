@@ -24,6 +24,7 @@ module Rlox
       @tokenizer = tokenizer
     end
 
+    # Returns the token generated from the tokenizer's current slice
     def token
       slice = tokenizer.current_slice
       return SINGLE_CHAR_TOKENS[slice].clone if SINGLE_CHAR_TOKENS.keys.include?(slice)
@@ -31,7 +32,9 @@ module Rlox
       nil
     end
 
+    # Returns the number of characters consumed, or zero if no token was generated
     def chars_consumed
+      return 0 if token.nil?
       token.string.size
     end
   end
@@ -90,6 +93,28 @@ module Rlox
       return Token.new(type: :comment, string: tokenizer.leftovers) if COMMENT_PATTERN =~ tokenizer.leftovers
 
       Token.new(type: :slash, string: tokenizer.current_slice)
+    end
+  end
+
+  # StringTokenizer
+  class StringTokenizer < SingleCharTokenizer
+    def initialize(tokenizer)
+      super(tokenizer)
+      @token = nil
+    end
+
+    def token
+      return @token unless @token.nil?
+      return nil unless tokenizer.current_slice == '"'
+
+      peek_amt = 1
+      until tokenizer.at_end?(peek_amt) || !@token.nil?
+        slice = tokenizer.current_slice(peek_amt)
+        @token = Token.new(type: :string, string: slice) if slice.end_with?('"')
+        peek_amt += 1
+      end
+
+      @token
     end
   end
 end
