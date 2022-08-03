@@ -23,8 +23,8 @@ module Rlox
     OPERATOR_TOKENS = {
       /\A!\z/ => Token.new(type: :bang, string: "!"),
       /\A!=\z/ => Token.new(type: :bang_equal, string: "!="),
-      /\A\=\z/ => Token.new(type: :equal, string: "="),
-      /\A\==\z/ => Token.new(type: :equal_equal, string: "=="),
+      /\A=\z/ => Token.new(type: :equal, string: "="),
+      /\A==\z/ => Token.new(type: :equal_equal, string: "=="),
       /\A<\z/ => Token.new(type: :less, string: "<"),
       /\A<=\z/ => Token.new(type: :less_equal, string: "<="),
       /\A>\z/ => Token.new(type: :greater, string: ">"),
@@ -41,18 +41,8 @@ module Rlox
     end
 
     def scan
-      token = nil
-      token = SINGLE_CHAR_TOKENS[current_slice].clone if SINGLE_CHAR_TOKENS.keys.include?(current_slice)
-
-      if OPERATOR_TOKENS.keys.map { |re| re =~ current_slice }.any?
-        if OPERATOR_TOKENS.keys.map { |re| re =~ current_slice(1) }.any?
-          token = OPERATOR_TOKENS.select { |re, _| re =~ current_slice(1) }.values[0]
-          @current_index += 1
-        else
-          token = OPERATOR_TOKENS.select { |re, _| re =~ current_slice }.values[0]
-        end
-      end
-
+      token = single_char_token
+      token = operator_token if token.nil?
       @start_index = @current_index unless token.nil?
       token
     end
@@ -75,6 +65,23 @@ module Rlox
     end
 
     private
+
+    def single_char_token
+      return SINGLE_CHAR_TOKENS[current_slice].clone if SINGLE_CHAR_TOKENS.keys.include?(current_slice)
+
+      nil
+    end
+
+    def operator_token
+      token = operator_for(current_slice(1))
+      token = operator_for(current_slice) if token.nil?
+      @current_index += 1 if !token.nil? && token.string.size > 1
+      token
+    end
+
+    def operator_for(string)
+      OPERATOR_TOKENS.select { |re, _| re =~ string }.values[0] || nil
+    end
 
     def current_slice(peek_amount = 0)
       source[@start_index...(@current_index + peek_amount)]
