@@ -11,4 +11,10 @@ class ScannerTest < Test::Unit::TestCase
     assert_equal single_chars.chars, tokens.map(&:string)
     assert_equal expected_types, tokens.map(&:type)
   end
+
+  test "tokenizes invalid characters as invalid" do
+    invalid_chars = '#@^'
+    tokens = Rlox::Scanner.new(invalid_chars).scan_tokens
+    assert(tokens.map(&:type).all? { |t| t == :invalid_token })
+  end
 end
