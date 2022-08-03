@@ -105,8 +105,6 @@ module Rlox
 
     def scan
       token = nil
-      tokenizers = [SingleCharTokenizer.new(self), OperatorTokenizer.new(self),
-        SlashOrCommentTokenizer.new(self)]
       tokenizers.each do |tokenizer|
         if (token = tokenizer.token)
           @current_index += tokenizer.chars_consumed - 1
@@ -145,11 +143,8 @@ module Rlox
 
     private
 
-    def slash_or_comment_token
-      return nil unless current_slice == "/"
-      return Token.new(type: :comment, string: leftovers) if COMMENT_PATTERN =~ leftovers
-
-      Token.new(type: :slash, string: current_slice)
+    def tokenizers
+      [SingleCharTokenizer.new(self), OperatorTokenizer.new(self), SlashOrCommentTokenizer.new(self)]
     end
   end
 
