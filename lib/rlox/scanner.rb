@@ -67,7 +67,7 @@ module Rlox
 
     def tokenizers
       [SingleCharTokenizer.new(self), OperatorTokenizer.new(self), SlashOrCommentTokenizer.new(self),
-        StringTokenizer.new(self)]
+       StringTokenizer.new(self)]
     end
   end
 
@@ -75,8 +75,7 @@ module Rlox
   #
   # Scans source code for tokens
   class Scanner
-    attr_reader :tokenizer
-    attr_reader :errors
+    attr_reader :tokenizer, :errors
 
     def initialize(source)
       @errors = []
@@ -87,14 +86,8 @@ module Rlox
       tokens = []
 
       until tokenizer.at_end?
-        begin
-          token = tokenizer.advance_index.scan
-          tokens << token unless token.nil?
-        rescue Rlox::ScanError => e
-          @errors << e
-          tokenizer.advance_past_last_peek
-          next
-        end
+        token = acquire_token
+        tokens << token unless token.nil?
       end
 
       if tokenizer.leftovers?
@@ -104,6 +97,17 @@ module Rlox
       end
 
       tokens
+    end
+
+    private
+
+    def acquire_token
+      token = tokenizer.advance_index.scan
+    rescue Rlox::ScanError => e
+      @errors << e
+      tokenizer.advance_past_last_peek
+    ensure
+      token
     end
   end
 end

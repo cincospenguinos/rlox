@@ -59,13 +59,13 @@ class ScannerTest < Test::Unit::TestCase
     scanner = Rlox::Scanner.new(invalid_chars)
     scanner.scan_tokens
     assert scanner.errors.any?
-    assert scanner.errors.first.to_s.include?('invalid token')
+    assert scanner.errors.first.to_s.include?("invalid token")
   end
 
   test "scanner emits errors for unclosed string" do
     scanner = Rlox::Scanner.new('"this is a string')
     scanner.scan_tokens
     assert scanner.errors.any?
-    assert scanner.errors.first.to_s.include?('unclosed string')
+    assert scanner.errors.first.to_s.include?("unclosed string")
   end
 end

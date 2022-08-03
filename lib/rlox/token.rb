@@ -35,6 +35,7 @@ module Rlox
     # Returns the number of characters consumed, or zero if no token was generated
     def chars_consumed
       return 0 if token.nil?
+
       token.string.size
     end
   end
@@ -114,7 +115,7 @@ module Rlox
         peek_amt += 1
       end
 
-      raise Rlox::ScanError.new("unclosed string: #{tokenizer.current_slice(peek_amt)}") if @token.nil?
+      raise Rlox::ScanError, "unclosed string: #{tokenizer.current_slice(peek_amt)}" if @token.nil?
 
       @token
     end
