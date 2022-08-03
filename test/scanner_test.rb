@@ -12,6 +12,15 @@ class ScannerTest < Test::Unit::TestCase
     assert_equal expected_types, tokens.map(&:type)
   end
 
+  test "tokenizes multi-character operators" do
+    operators = %w(! != == = < <= > >=)
+    expected_types = %i(bang bang_equal equal_equal equal less
+      less_equal greater greater_equal)
+    tokens = Rlox::Scanner.new(operators.join('')).scan_tokens
+    assert_equal operators, tokens.map(&:string)
+    assert_equal expected_types, tokens.map(&:type)
+  end
+
   test "tokenizes invalid characters as invalid" do
     invalid_chars = '#@^'
     tokens = Rlox::Scanner.new(invalid_chars).scan_tokens
