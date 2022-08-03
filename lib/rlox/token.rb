@@ -141,18 +141,26 @@ module Rlox
 
       peek_amt = 1
       until tokenizer.at_end?(peek_amt) || !@token.nil?
-        slice = tokenizer.current_slice(peek_amt)
-
-        unless slice =~ NUMBER_REGEX
-          @token = Token.new(type: :number, string: tokenizer.current_slice(peek_amt - 1)) if slice[-1] != '.'
-        end
-
+        @token = acquire_token_at(peek_amt)
         peek_amt += 1
       end
 
       @token = Token.new(type: :number, string: tokenizer.current_slice(peek_amt)) if tokenizer.current_slice(peek_amt) =~ NUMBER_REGEX
 
       @token
+    end
+
+    private
+
+    def acquire_token_at(peek_amt)
+      slice = tokenizer.current_slice(peek_amt)
+
+      unless slice =~ NUMBER_REGEX
+        actual_slice = tokenizer.current_slice(peek_amt - 1)
+        return Token.new(type: :number, string: actual_slice) unless slice.end_with?('.')
+      end
+
+      nil
     end
   end
 end
