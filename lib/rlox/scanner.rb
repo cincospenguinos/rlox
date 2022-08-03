@@ -46,7 +46,7 @@ module Rlox
       token = single_char_token
       token = operator_token if token.nil?
       token = slash_or_comment_token if token.nil?
-      @start_index = @current_index unless token.nil?
+      @start_index = @current_index if !token.nil? || current_slice =~ /\s+/
       token
     end
 

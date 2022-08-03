@@ -31,6 +31,16 @@ class ScannerTest < Test::Unit::TestCase
     assert_equal :slash, tokens.first.type
   end
 
+  test "scanner ignores whitespace" do
+    str = "  +   
+      \r 
+    "
+    tokens = Rlox::Scanner.new(str).scan_tokens
+    assert_equal 1, tokens.size
+    refute_equal :invalid_token, tokens.first.type
+    assert_equal '+', tokens.first.string
+  end
+
   test "tokenizes invalid characters as invalid" do
     invalid_chars = '#@^'
     tokens = Rlox::Scanner.new(invalid_chars).scan_tokens
