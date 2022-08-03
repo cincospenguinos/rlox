@@ -74,12 +74,26 @@ module Rlox
     end
   end
 
+  class SlashOrCommentTokenizer < SingleCharTokenizer
+    COMMENT_PATTERN = %r{\A//[\w\s]+\z}.freeze
+
+    def initialize(tokenizer)
+      super(tokenizer)
+      @token = nil
+    end
+
+    def token
+      return nil unless tokenizer.current_slice == "/"
+      return Token.new(type: :comment, string: tokenizer.leftovers) if COMMENT_PATTERN =~ tokenizer.leftovers
+
+      Token.new(type: :slash, string: tokenizer.current_slice)
+    end
+  end
+
   # Tokenizer
   #
   # Tokenizes provided source code into tokens
   class Tokenizer
-    COMMENT_PATTERN = %r{\A//[\w\s]+\z}.freeze
-
     attr_reader :source
 
     def initialize(source)
@@ -91,7 +105,8 @@ module Rlox
 
     def scan
       token = nil
-      tokenizers = [SingleCharTokenizer.new(self), OperatorTokenizer.new(self)]
+      tokenizers = [SingleCharTokenizer.new(self), OperatorTokenizer.new(self),
+        SlashOrCommentTokenizer.new(self)]
       tokenizers.each do |tokenizer|
         if (token = tokenizer.token)
           @current_index += tokenizer.chars_consumed - 1
@@ -99,7 +114,6 @@ module Rlox
         end
       end
 
-      token = slash_or_comment_token if token.nil?
       @start_index = @current_index if !token.nil? || current_slice =~ /\s+/
       token
     end
