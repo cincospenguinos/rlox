@@ -1,23 +1,26 @@
 # frozen_string_literal: true
-require 'ostruct'
+
+require "struct"
 
 module Rlox
+  Token = Struct.new(:type, :string, keyword_init: true)
+
   # Scanner
   #
   # Scans source code for tokens
   class Scanner
     SINGLE_CHAR_TOKENS = {
-      '(' => OpenStruct.new(type: :left_paren, string: '('),
-      ')' => OpenStruct.new(type: :right_paren, string: ')'),
-      '{' => OpenStruct.new(type: :left_brace, string: '{'),
-      '}' => OpenStruct.new(type: :right_brace, string: '}'),
-      ',' => OpenStruct.new(type: :comma, string: ','),
-      '.' => OpenStruct.new(type: :dot, string: '.'),
-      '-' => OpenStruct.new(type: :dash, string: '-'),
-      '+' => OpenStruct.new(type: :plus, string: '+'),
-      ';' => OpenStruct.new(type: :semicolon, string: ';'),
-      '*' => OpenStruct.new(type: :star, string: '*'),
-    }
+      "(" => Token.new(type: :left_paren, string: "("),
+      ")" => Token.new(type: :right_paren, string: ")"),
+      "{" => Token.new(type: :left_brace, string: "{"),
+      "}" => Token.new(type: :right_brace, string: "}"),
+      "," => Token.new(type: :comma, string: ","),
+      "." => Token.new(type: :dot, string: "."),
+      "-" => Token.new(type: :dash, string: "-"),
+      "+" => Token.new(type: :plus, string: "+"),
+      ";" => Token.new(type: :semicolon, string: ";"),
+      "*" => Token.new(type: :star, string: "*")
+    }.freeze
 
     attr_reader :source
 
@@ -38,7 +41,7 @@ module Rlox
           @start_index = @current_index
         end
       end
-      
+
       tokens
     end
 

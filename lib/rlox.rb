@@ -6,6 +6,10 @@ require_relative "rlox/scanner"
 
 module Rlox
   class Error < StandardError; end
+
+  # LoxExecutionError
+  #
+  # Error for when execution goes wrong
   class LoxExecutionError < Error
     attr_reader :message
 
