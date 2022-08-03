@@ -21,6 +21,16 @@ class ScannerTest < Test::Unit::TestCase
     assert_equal expected_types, tokens.map(&:type)
   end
 
+  test "tokenizes comments properly" do
+    tokens = Rlox::Scanner.new("// this is a comment").scan_tokens
+    assert_equal :comment, tokens.first.type
+  end
+
+  test "tokenizes the slash operator" do
+    tokens = Rlox::Scanner.new("/").scan_tokens
+    assert_equal :slash, tokens.first.type
+  end
+
   test "tokenizes invalid characters as invalid" do
     invalid_chars = '#@^'
     tokens = Rlox::Scanner.new(invalid_chars).scan_tokens

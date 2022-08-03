@@ -43,6 +43,7 @@ module Rlox
     def scan
       token = single_char_token
       token = operator_token if token.nil?
+      token = slash_or_comment_token if token.nil?
       @start_index = @current_index unless token.nil?
       token
     end
@@ -57,6 +58,10 @@ module Rlox
     end
 
     def leftovers
+      current_slice(source.length - @current_index)
+    end
+
+    def leftovers_as_invalid_token
       Token.new(type: :invalid_token, string: current_slice)
     end
 
@@ -83,6 +88,13 @@ module Rlox
       OPERATOR_TOKENS.select { |re, _| re =~ string }.values[0] || nil
     end
 
+    def slash_or_comment_token
+      return nil unless current_slice == '/'
+      return Token.new(type: :comment, string: leftovers) if /\A\/\/[\w\s]+\z/ =~ leftovers
+
+      Token.new(type: :slash, string: current_slice)
+    end
+
     def current_slice(peek_amount = 0)
       source[@start_index...(@current_index + peek_amount)]
     end
@@ -106,7 +118,7 @@ module Rlox
         tokens << token unless token.nil?
       end
 
-      tokens << tokenizer.leftovers if tokenizer.leftovers?
+      tokens << tokenizer.leftovers_as_invalid_token if tokenizer.leftovers?
       tokens
     end
   end
