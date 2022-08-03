@@ -31,6 +31,8 @@ module Rlox
       /\A>=\z/ => Token.new(type: :greater_equal, string: ">=")
     }.freeze
 
+    COMMENT_PATTERN = %r{\A//[\w\s]+\z}.freeze
+
     attr_reader :source
 
     def initialize(source)
@@ -90,7 +92,7 @@ module Rlox
 
     def slash_or_comment_token
       return nil unless current_slice == "/"
-      return Token.new(type: :comment, string: leftovers) if %r{\A//[\w\s]+\z} =~ leftovers
+      return Token.new(type: :comment, string: leftovers) if COMMENT_PATTERN =~ leftovers
 
       Token.new(type: :slash, string: current_slice)
     end
