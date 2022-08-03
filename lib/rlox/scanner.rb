@@ -3,10 +3,7 @@
 module Rlox
   Token = Struct.new(:type, :string, keyword_init: true)
 
-  # Tokenizer
-  #
-  # Tokenizes provided source code into tokens
-  class Tokenizer
+  class SingleCharTokenizer
     SINGLE_CHAR_TOKENS = {
       "(" => Token.new(type: :left_paren, string: "("),
       ")" => Token.new(type: :right_paren, string: ")"),
@@ -20,6 +17,28 @@ module Rlox
       "*" => Token.new(type: :star, string: "*")
     }.freeze
 
+    attr_reader :tokenizer
+
+    def initialize(tokenizer)
+      @tokenizer = tokenizer
+    end
+
+    def token
+      slice = tokenizer.current_slice
+      return SINGLE_CHAR_TOKENS[slice].clone if SINGLE_CHAR_TOKENS.keys.include?(slice)
+
+      nil
+    end
+
+    def chars_consumed
+      1
+    end
+  end
+
+  # Tokenizer
+  #
+  # Tokenizes provided source code into tokens
+  class Tokenizer
     OPERATOR_TOKENS = {
       /\A!\z/ => Token.new(type: :bang, string: "!"),
       /\A!=\z/ => Token.new(type: :bang_equal, string: "!="),
@@ -43,7 +62,7 @@ module Rlox
     end
 
     def scan
-      token = single_char_token
+      token = SingleCharTokenizer.new(self).token
       token = operator_token if token.nil?
       token = slash_or_comment_token if token.nil?
       @start_index = @current_index if !token.nil? || current_slice =~ /\s+/
@@ -71,6 +90,10 @@ module Rlox
       !current_slice.empty?
     end
 
+    def current_slice(peek_amount = 0)
+      source[@start_index...(@current_index + peek_amount)]
+    end
+
     private
 
     def single_char_token
@@ -95,10 +118,6 @@ module Rlox
       return Token.new(type: :comment, string: leftovers) if COMMENT_PATTERN =~ leftovers
 
       Token.new(type: :slash, string: current_slice)
-    end
-
-    def current_slice(peek_amount = 0)
-      source[@start_index...(@current_index + peek_amount)]
     end
   end
 
