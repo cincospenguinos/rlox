@@ -89,8 +89,8 @@ module Rlox
     end
 
     def slash_or_comment_token
-      return nil unless current_slice == '/'
-      return Token.new(type: :comment, string: leftovers) if /\A\/\/[\w\s]+\z/ =~ leftovers
+      return nil unless current_slice == "/"
+      return Token.new(type: :comment, string: leftovers) if %r{\A//[\w\s]+\z} =~ leftovers
 
       Token.new(type: :slash, string: current_slice)
     end
