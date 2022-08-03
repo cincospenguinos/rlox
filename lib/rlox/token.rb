@@ -129,7 +129,7 @@ module Rlox
 
   # NumberTokenizer
   class NumberTokenizer < SingleCharTokenizer
-    NUMBER_REGEX = %r{\A\d+(\.\d+)?\z}
+    NUMBER_REGEX = /\A\d+(\.\d+)?\z/.freeze
     def initialize(tokenizer)
       super(tokenizer)
       @token = nil
@@ -137,7 +137,7 @@ module Rlox
 
     def token
       return @token unless @token.nil?
-      return nil unless tokenizer.current_slice =~ %r{\A\d}
+      return nil unless tokenizer.current_slice =~ /\A\d/
 
       peek_amt = 1
       until tokenizer.at_end?(peek_amt) || !@token.nil?
@@ -145,8 +145,7 @@ module Rlox
         peek_amt += 1
       end
 
-      @token = Token.new(type: :number, string: tokenizer.current_slice(peek_amt)) if tokenizer.current_slice(peek_amt) =~ NUMBER_REGEX
-
+      @token = generate_token(tokenizer.current_slice(peek_amt)) if tokenizer.current_slice(peek_amt) =~ NUMBER_REGEX
       @token
     end
 
@@ -157,10 +156,14 @@ module Rlox
 
       unless slice =~ NUMBER_REGEX
         actual_slice = tokenizer.current_slice(peek_amt - 1)
-        return Token.new(type: :number, string: actual_slice) unless slice.end_with?('.')
+        return generate_token(actual_slice) unless slice.end_with?(".")
       end
 
       nil
+    end
+
+    def generate_token(string)
+      Token.new(type: :number, string: string)
     end
   end
 end
