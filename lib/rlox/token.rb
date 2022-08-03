@@ -114,6 +114,8 @@ module Rlox
         peek_amt += 1
       end
 
+      raise Rlox::ScanError.new("unclosed string: #{tokenizer.current_slice(peek_amt)}") if @token.nil?
+
       @token
     end
   end

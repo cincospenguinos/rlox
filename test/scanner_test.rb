@@ -53,4 +53,19 @@ class ScannerTest < Test::Unit::TestCase
     tokens = Rlox::Scanner.new(invalid_chars).scan_tokens
     assert(tokens.map(&:type).all? { |t| t == :invalid_token })
   end
+
+  test "scanner emits errors for invalid chars" do
+    invalid_chars = '#@^'
+    scanner = Rlox::Scanner.new(invalid_chars)
+    scanner.scan_tokens
+    assert scanner.errors.any?
+    assert scanner.errors.first.to_s.include?('invalid token')
+  end
+
+  test "scanner emits errors for unclosed string" do
+    scanner = Rlox::Scanner.new('"this is a string')
+    scanner.scan_tokens
+    assert scanner.errors.any?
+    assert scanner.errors.first.to_s.include?('unclosed string')
+  end
 end
