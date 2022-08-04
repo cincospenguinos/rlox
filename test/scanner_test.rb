@@ -81,6 +81,6 @@ class ScannerTest < Test::Unit::TestCase
     scanner = Rlox::Scanner.new("12. ")
     scanner.scan_tokens
     assert scanner.errors.any?
-    assert scanner.errors.first.to_s.include?('unbounded decimal')
+    assert scanner.errors.first.to_s.include?("unbounded decimal")
   end
 end

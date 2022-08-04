@@ -147,13 +147,18 @@ module Rlox
         peek_amt += 1
       end
 
-      raise Rlox::ScanError, "unbounded decimal \"#{tokenizer.current_slice(peek_amt)}\"" if tokenizer.current_slice(peek_amt) =~ UNBOUND_DECIMAL_PATTERN
-
-      @token = generate_token(tokenizer.current_slice(peek_amt)) if tokenizer.current_slice(peek_amt) =~ NUMBER_PATTERN
-      @token
+      settle_token_value(peek_amt)
     end
 
     private
+
+    def settle_token_value(peek_amt)
+      slice = tokenizer.current_slice(peek_amt)
+      raise Rlox::ScanError, "unbounded decimal \"#{slice}\"" if slice =~ UNBOUND_DECIMAL_PATTERN
+
+      @token = generate_token(slice) if tokenizer.current_slice(peek_amt) =~ NUMBER_PATTERN
+      @token
+    end
 
     def acquire_token_at(peek_amt)
       slice = tokenizer.current_slice(peek_amt)
