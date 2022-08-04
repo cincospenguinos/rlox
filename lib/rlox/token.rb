@@ -129,7 +129,9 @@ module Rlox
 
   # NumberTokenizer
   class NumberTokenizer < SingleCharTokenizer
-    NUMBER_REGEX = /\A\d+(\.\d+)?\z/.freeze
+    NUMBER_PATTERN = /\A\d+(\.\d+)?\z/.freeze
+    UNBOUND_DECIMAL_PATTERN = /\A\d+\.\s+/.freeze
+
     def initialize(tokenizer)
       super(tokenizer)
       @token = nil
@@ -145,7 +147,9 @@ module Rlox
         peek_amt += 1
       end
 
-      @token = generate_token(tokenizer.current_slice(peek_amt)) if tokenizer.current_slice(peek_amt) =~ NUMBER_REGEX
+      raise Rlox::ScanError, "unbounded decimal \"#{tokenizer.current_slice(peek_amt)}\"" if tokenizer.current_slice(peek_amt) =~ UNBOUND_DECIMAL_PATTERN
+
+      @token = generate_token(tokenizer.current_slice(peek_amt)) if tokenizer.current_slice(peek_amt) =~ NUMBER_PATTERN
       @token
     end
 
@@ -154,7 +158,7 @@ module Rlox
     def acquire_token_at(peek_amt)
       slice = tokenizer.current_slice(peek_amt)
 
-      unless slice =~ NUMBER_REGEX
+      unless slice =~ NUMBER_PATTERN
         actual_slice = tokenizer.current_slice(peek_amt - 1)
         return generate_token(actual_slice) unless slice.end_with?(".")
       end
