@@ -126,9 +126,10 @@ module Rlox
     end
   end
 
+  ## NumberLiterealTokenizer
   class NumberLiteralTokenizer < SingleCharTokenizer
-    NUMBER_LITERAL_PATTERN = %r{\A[0-9]+(\.[0-9]+)?\z}.freeze
-    UNBOUNDED_DECIMAL_PATTERN = %r{\A[0-9]+\.\z}.freeze
+    NUMBER_LITERAL_PATTERN = /\A[0-9]+(\.[0-9]+)?\z/.freeze
+    UNBOUNDED_DECIMAL_PATTERN = /\A[0-9]+\.\z/.freeze
 
     def initialize(tokenizer)
       super(tokenizer)
@@ -138,11 +139,12 @@ module Rlox
     def token
       return nil unless tokenizer.current_slice =~ /[0-9]+/
 
-      until tokenizer.current_slice(1) =~ /\s+/ || tokenizer.at_end?
-        tokenizer.advance_index
-      end
+      tokenizer.advance_index until tokenizer.current_slice(1) =~ /\s+/ || tokenizer.at_end?
 
-      raise Rlox::ScanError, "unbounded decimal: #{}" if UNBOUNDED_DECIMAL_PATTERN =~ tokenizer.current_slice
+      if UNBOUNDED_DECIMAL_PATTERN =~ tokenizer.current_slice
+        raise Rlox::ScanError,
+              "unbounded decimal: #{tokenizer.current_slice}"
+      end
 
       if NUMBER_LITERAL_PATTERN =~ tokenizer.current_slice
         return Token.new(type: :number_literal,

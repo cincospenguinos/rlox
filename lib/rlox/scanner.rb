@@ -56,6 +56,7 @@ module Rlox
 
     def leftovers?
       return false if current_slice.nil?
+
       !current_slice.empty?
     end
 

@@ -61,7 +61,7 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "tokenizer accepts numeric literals" do
-    tokens = Rlox::Scanner.new('1 92 12.3 0.11022').scan_tokens
+    tokens = Rlox::Scanner.new("1 92 12.3 0.11022").scan_tokens
     assert_equal 4, tokens.size
     assert(tokens.map(&:type).all? { |t| t == :number_literal })
   end
