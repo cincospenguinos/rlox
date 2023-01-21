@@ -3,7 +3,7 @@
 require_relative "token"
 
 module Rlox
-  # Tokenizer
+  ## Tokenizer
   #
   # Tokenizes provided source code into tokens
   class Tokenizer
@@ -57,7 +57,8 @@ module Rlox
     private
 
     def tokenizers
-      [SingleCharTokenizer.new(self), OperatorTokenizer.new(self), SlashOrCommentTokenizer.new(self)]
+      [SingleCharTokenizer.new(self), OperatorTokenizer.new(self),
+       SlashOrCommentTokenizer.new(self), StringLiteralTokenizer.new(self)]
     end
   end
 

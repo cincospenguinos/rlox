@@ -3,7 +3,7 @@
 module Rlox
   Token = Struct.new(:type, :string, keyword_init: true)
 
-  # SingleCharTokenizer
+  ## SingleCharTokenizer
   class SingleCharTokenizer
     SINGLE_CHAR_TOKENS = {
       "(" => Token.new(type: :left_paren, string: "("),
@@ -36,7 +36,7 @@ module Rlox
     end
   end
 
-  # OperatorTokenizer
+  ## OperatorTokenizer
   class OperatorTokenizer < SingleCharTokenizer
     OPERATOR_TOKENS = {
       /\A!\z/ => Token.new(type: :bang, string: "!"),
@@ -76,7 +76,7 @@ module Rlox
     end
   end
 
-  # SlashOrCommentTokenizer
+  ## SlashOrCommentTokenizer
   class SlashOrCommentTokenizer < SingleCharTokenizer
     COMMENT_PATTERN = %r{\A//[\w\s]+\z}.freeze
 
@@ -90,6 +90,27 @@ module Rlox
       return Token.new(type: :comment, string: tokenizer.leftovers) if COMMENT_PATTERN =~ tokenizer.leftovers
 
       Token.new(type: :slash, string: tokenizer.current_slice)
+    end
+  end
+
+  ## StringLiteralTokenizer
+  class StringLiteralTokenizer < SingleCharTokenizer
+    STRING_LITERAL_PATTERN = /\A"[\w\s]+"\z/.freeze
+
+    def initialize(tokenizer)
+      super(tokenizer)
+      @token = nil
+    end
+
+    def token
+      return nil unless tokenizer.current_slice == '"'
+
+      if STRING_LITERAL_PATTERN =~ tokenizer.leftovers
+        return Token.new(type: :string_literal,
+                         string: tokenizer.leftovers)
+      end
+
+      nil
     end
   end
 end

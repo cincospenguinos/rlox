@@ -46,4 +46,10 @@ class ScannerTest < Test::Unit::TestCase
     tokens = Rlox::Scanner.new(invalid_chars).scan_tokens
     assert(tokens.map(&:type).all? { |t| t == :invalid_token })
   end
+
+  test "tokenizes string literals" do
+    tokens = Rlox::Scanner.new('"string literal"').scan_tokens
+    assert_equal 1, tokens.size
+    assert_equal :string_literal, tokens[0].type
+  end
 end
