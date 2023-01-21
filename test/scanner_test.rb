@@ -31,6 +31,13 @@ class ScannerTest < Test::Unit::TestCase
     assert_equal :slash, tokens.first.type
   end
 
+  test "tokenizes strings" do
+    tokens = Rlox::Scanner.new('"this is a string"').scan_tokens
+    assert_equal 1, tokens.size
+    assert_equal :string_literal, tokens.first.type
+    assert_equal '"this is a string"', tokens.first.string
+  end
+
   test "scanner ignores whitespace" do
     str = "  +
       \r
@@ -63,5 +70,29 @@ class ScannerTest < Test::Unit::TestCase
     tokens = Rlox::Scanner.new('1 92 12.3 0.11022').scan_tokens
     assert_equal 4, tokens.size
     assert(tokens.map(&:type).all? { |t| t == :number_literal })
+  end
+
+  test "scanner emits errors for invalid chars" do
+    invalid_chars = '#@^'
+    scanner = Rlox::Scanner.new(invalid_chars)
+    scanner.scan_tokens
+    assert scanner.errors.any?
+    assert scanner.errors.first.to_s.include?("invalid token")
+  end
+
+  test "scanner emits errors for unclosed string" do
+    omit 'handle errors in next commit'
+    scanner = Rlox::Scanner.new('"this is a string')
+    scanner.scan_tokens
+    assert scanner.errors.any?
+    assert scanner.errors.first.to_s.include?("unclosed string")
+  end
+
+  test "scanner handles invalid number error" do
+    omit 'handle errors in next commit'
+    scanner = Rlox::Scanner.new("12. ")
+    scanner.scan_tokens
+    assert scanner.errors.any?
+    assert scanner.errors.first.to_s.include?("unbounded decimal")
   end
 end

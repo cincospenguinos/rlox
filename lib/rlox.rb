@@ -7,10 +7,10 @@ require_relative "rlox/scanner"
 module Rlox
   class Error < StandardError; end
 
-  # LoxExecutionError
+  # ScanError
   #
-  # Error for when execution goes wrong
-  class LoxExecutionError < Error
+  # Error to apper when scanning
+  class ScanError < StandardError
     attr_reader :message
 
     def initialize(message)
@@ -20,10 +20,6 @@ module Rlox
 
     def to_s
       @message
-    end
-
-    def self.generate_error(line_number, message)
-      LoxExecutionError.new("[ERR] on line #{line_number}: #{message}")
     end
   end
 end

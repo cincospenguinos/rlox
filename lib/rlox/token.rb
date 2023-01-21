@@ -24,6 +24,7 @@ module Rlox
       @tokenizer = tokenizer
     end
 
+    # Returns the token generated from the tokenizer's current slice
     def token
       slice = tokenizer.current_slice
       return SINGLE_CHAR_TOKENS[slice].clone if SINGLE_CHAR_TOKENS.keys.include?(slice)
@@ -31,7 +32,10 @@ module Rlox
       nil
     end
 
+    # Returns the number of characters consumed, or zero if no token was generated
     def chars_consumed
+      return 0 if token.nil?
+
       token.string.size
     end
   end
@@ -95,7 +99,6 @@ module Rlox
   ## StringLiteralTokenizer
   class StringLiteralTokenizer < SingleCharTokenizer
     STRING_LITERAL_PATTERN = %r{\A"[\w\s]+"\z}.freeze
-
     def initialize(tokenizer)
       super(tokenizer)
       @token = nil
@@ -123,8 +126,6 @@ module Rlox
 
     def token
       return nil unless tokenizer.current_slice =~ /[0-9]+/
-
-      # byebug
 
       until tokenizer.current_slice(1) =~ /\s+/ || tokenizer.at_end?
         tokenizer.advance_index

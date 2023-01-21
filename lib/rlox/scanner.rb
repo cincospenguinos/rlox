@@ -13,6 +13,7 @@ module Rlox
       @source = source
       @start_index = 0
       @current_index = 0
+      @last_peek_amt = 0
       @source = source
     end
 
@@ -34,8 +35,15 @@ module Rlox
       self
     end
 
-    def at_end?
-      @current_index >= source.length
+    def advance_past_last_peek
+      @current_index += @last_peek_amt
+      @last_peek_amt = 0
+      self
+    end
+
+    def at_end?(peek_amount = 0)
+      @last_peek_amt = peek_amount
+      @current_index + peek_amount > source.length
     end
 
     def leftovers
@@ -52,6 +60,7 @@ module Rlox
     end
 
     def current_slice(peek_amount = 0)
+      @last_peek_amt = peek_amount
       source[@start_index...(@current_index + peek_amount)]
     end
 
@@ -68,9 +77,10 @@ module Rlox
   #
   # Scans source code for tokens
   class Scanner
-    attr_reader :tokenizer
+    attr_reader :tokenizer, :errors
 
     def initialize(source)
+      @errors = []
       @tokenizer = Tokenizer.new(source)
     end
 
@@ -78,12 +88,28 @@ module Rlox
       tokens = []
 
       until tokenizer.at_end?
-        token = tokenizer.advance_index.scan
+        token = acquire_token
         tokens << token unless token.nil?
       end
 
-      tokens << tokenizer.leftovers_as_invalid_token if tokenizer.leftovers?
+      if tokenizer.leftovers?
+        # TODO: Better error capturing
+        @errors << Rlox::ScanError.new("invalid token at #{tokenizer.current_slice}")
+        tokens << tokenizer.leftovers_as_invalid_token
+      end
+
       tokens
+    end
+
+    private
+
+    def acquire_token
+      token = tokenizer.advance_index.scan
+    rescue Rlox::ScanError => e
+      @errors << e
+      tokenizer.advance_past_last_peek
+    ensure
+      token
     end
   end
 end
