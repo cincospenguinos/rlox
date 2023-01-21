@@ -52,4 +52,10 @@ class ScannerTest < Test::Unit::TestCase
     assert_equal 1, tokens.size
     assert_equal :string_literal, tokens[0].type
   end
+
+  test "tokenizer rejects incorrectly handled string literals" do
+    tokens = Rlox::Scanner.new('"no end string').scan_tokens
+    assert_equal 1, tokens.size
+    assert_equal :invalid_token, tokens[0].type
+  end
 end
