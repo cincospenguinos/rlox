@@ -139,19 +139,23 @@ module Rlox
     def token
       return nil unless tokenizer.current_slice =~ /[0-9]+/
 
-      tokenizer.advance_index until tokenizer.current_slice(1) =~ /\s+/ || tokenizer.at_end?
+      advance_tokenizer_until_whitespace_or_end
 
       if UNBOUNDED_DECIMAL_PATTERN =~ tokenizer.current_slice
         raise Rlox::ScanError,
               "unbounded decimal: #{tokenizer.current_slice}"
-      end
-
-      if NUMBER_LITERAL_PATTERN =~ tokenizer.current_slice
+      elsif NUMBER_LITERAL_PATTERN =~ tokenizer.current_slice
         return Token.new(type: :number_literal,
                          string: tokenizer.current_slice)
       end
 
       nil
+    end
+
+    private
+
+    def advance_tokenizer_until_whitespace_or_end
+      tokenizer.advance_index until tokenizer.current_slice(1) =~ /\s+/ || tokenizer.at_end?
     end
   end
 end
