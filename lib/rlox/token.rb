@@ -98,21 +98,31 @@ module Rlox
 
   ## StringLiteralTokenizer
   class StringLiteralTokenizer < SingleCharTokenizer
-    STRING_LITERAL_PATTERN = %r{\A"[\w\s]+"\z}.freeze
     def initialize(tokenizer)
       super(tokenizer)
       @token = nil
     end
 
     def token
+      return @token unless @token.nil?
       return nil unless tokenizer.current_slice == '"'
 
-      if STRING_LITERAL_PATTERN =~ tokenizer.leftovers
-        return Token.new(type: :string_literal,
-                         string: tokenizer.leftovers)
+      peek_amt = 1
+      until tokenizer.at_end?(peek_amt) || !@token.nil?
+        acquire_token_at(peek_amt)
+        peek_amt += 1
       end
 
-      nil
+      raise Rlox::ScanError, "unclosed string: #{tokenizer.current_slice(peek_amt)}" if @token.nil?
+
+      @token
+    end
+
+    private
+
+    def acquire_token_at(peek_amt)
+      slice = tokenizer.current_slice(peek_amt)
+      @token = Token.new(type: :string_literal, string: slice) if slice.end_with?('"')
     end
   end
 

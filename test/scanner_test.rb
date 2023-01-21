@@ -60,12 +60,6 @@ class ScannerTest < Test::Unit::TestCase
     assert_equal :string_literal, tokens[0].type
   end
 
-  test "tokenizer rejects incorrectly handled string literals" do
-    tokens = Rlox::Scanner.new('"no end string').scan_tokens
-    assert_equal 1, tokens.size
-    assert_equal :invalid_token, tokens[0].type
-  end
-
   test "tokenizer accepts numeric literals" do
     tokens = Rlox::Scanner.new('1 92 12.3 0.11022').scan_tokens
     assert_equal 4, tokens.size
@@ -81,7 +75,6 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "scanner emits errors for unclosed string" do
-    omit 'handle errors in next commit'
     scanner = Rlox::Scanner.new('"this is a string')
     scanner.scan_tokens
     assert scanner.errors.any?
