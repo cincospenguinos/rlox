@@ -82,7 +82,6 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "scanner handles invalid number error" do
-    omit 'handle errors in next commit'
     scanner = Rlox::Scanner.new("12. ")
     scanner.scan_tokens
     assert scanner.errors.any?
