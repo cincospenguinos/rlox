@@ -67,7 +67,6 @@ module Rlox
     def operator_token
       token = operator_for(current_slice(1))
       token = operator_for(current_slice) if token.nil?
-      @current_index += 1 if !token.nil? && token.string.size > 1
       token
     end
 
@@ -95,7 +94,7 @@ module Rlox
 
   ## StringLiteralTokenizer
   class StringLiteralTokenizer < SingleCharTokenizer
-    STRING_LITERAL_PATTERN = /\A"[\w\s]+"\z/.freeze
+    STRING_LITERAL_PATTERN = %r{\A"[\w\s]+"\z}.freeze
 
     def initialize(tokenizer)
       super(tokenizer)
@@ -108,6 +107,32 @@ module Rlox
       if STRING_LITERAL_PATTERN =~ tokenizer.leftovers
         return Token.new(type: :string_literal,
                          string: tokenizer.leftovers)
+      end
+
+      nil
+    end
+  end
+
+  class NumberLiteralTokenizer < SingleCharTokenizer
+    NUMBER_LITERAL_PATTERN = %r{\A[0-9]+(\.[0-9]+)?\z}.freeze
+
+    def initialize(tokenizer)
+      super(tokenizer)
+      @token = nil
+    end
+
+    def token
+      return nil unless tokenizer.current_slice =~ /[0-9]+/
+
+      # byebug
+
+      until tokenizer.current_slice(1) =~ /\s+/ || tokenizer.at_end?
+        tokenizer.advance_index
+      end
+
+      if NUMBER_LITERAL_PATTERN =~ tokenizer.current_slice
+        return Token.new(type: :number_literal,
+                         string: tokenizer.current_slice)
       end
 
       nil

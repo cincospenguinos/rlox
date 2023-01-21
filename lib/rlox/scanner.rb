@@ -47,6 +47,7 @@ module Rlox
     end
 
     def leftovers?
+      return false if current_slice.nil?
       !current_slice.empty?
     end
 
@@ -58,7 +59,8 @@ module Rlox
 
     def tokenizers
       [SingleCharTokenizer.new(self), OperatorTokenizer.new(self),
-       SlashOrCommentTokenizer.new(self), StringLiteralTokenizer.new(self)]
+       SlashOrCommentTokenizer.new(self), StringLiteralTokenizer.new(self),
+       NumberLiteralTokenizer.new(self)]
     end
   end
 
