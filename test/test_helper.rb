@@ -4,3 +4,4 @@ $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 require "rlox"
 
 require "test-unit"
+require "byebug"
