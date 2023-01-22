@@ -91,7 +91,7 @@ class ScannerTest < Test::Unit::TestCase
   test "scanner handles reserved words" do
     keywords = %w[and class else false for fun if nil or print return super this true var while]
     types = keywords.map(&:to_sym)
-    tokens = Rlox::Scanner.new(keywords.join(' ')).scan_tokens
+    tokens = Rlox::Scanner.new(keywords.join(" ")).scan_tokens
     assert_equal keywords.size, tokens.size
 
     i = 0
@@ -103,15 +103,15 @@ class ScannerTest < Test::Unit::TestCase
 
   test "scanner handles a full program" do
     program = <<~PROGRAM
-    print "Hello, world!";
-    var foo = 12;
-    var biz = foo + 12;
-    print biz;
+      print "Hello, world!";
+      var foo = 12;
+      var biz = foo + 12;
+      print biz;
     PROGRAM
 
-    token_types = %i(print string_literal semicolon var identifier equal number_literal
-      semicolon var identifier equal identifier plus number_literal semicolon
-      print identifier semicolon)
+    token_types = %i[print string_literal semicolon var identifier equal number_literal
+                     semicolon var identifier equal identifier plus number_literal semicolon
+                     print identifier semicolon]
 
     scanner = Rlox::Scanner.new(program)
     tokens = scanner.scan_tokens
