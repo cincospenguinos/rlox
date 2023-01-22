@@ -119,7 +119,7 @@ module Rlox
       return nil unless tokenizer.current_slice == '"'
 
       peek_amt = 1
-      until tokenizer.at_end?(peek_amt) || !@token.nil?
+      until tokenizer.at_end_disregard_source_length?(peek_amt) || !@token.nil?
         acquire_token_at(peek_amt)
         peek_amt += 1
       end

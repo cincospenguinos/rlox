@@ -59,6 +59,12 @@ module Rlox
       @current_index + peek_amount >= source.length
     end
 
+    # TODO: This is because of the string tokenizer, as there's an off-by-one error in here somewhere
+    def at_end_disregard_source_length?(peek_amount = 0)
+      @last_peek_amt = peek_amount
+      @current_index + peek_amount > source.length
+    end
+
     def leftovers
       current_slice(source.length - @current_index)
     end
@@ -119,6 +125,7 @@ module Rlox
     private
 
     def acquire_token
+      # byebug
       token = tokenizer.advance_index.scan
     rescue Rlox::ScanError => e
       @errors << e
