@@ -49,28 +49,18 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "tokenizes invalid characters as invalid" do
-    omit 'handling others'
     invalid_chars = '#@^'
     tokens = Rlox::Scanner.new(invalid_chars).scan_tokens
     assert(tokens.map(&:type).all? { |t| t == :invalid_token })
   end
 
-  test "tokenizes string literals" do
-    omit 'handling others'
-    tokens = Rlox::Scanner.new('"string literal"').scan_tokens
-    assert_equal 1, tokens.size
-    assert_equal :string_literal, tokens[0].type
-  end
-
   test "tokenizer accepts numeric literals" do
-    omit 'handling others'
     tokens = Rlox::Scanner.new("1 92 12.3 0.11022").scan_tokens
     assert_equal 4, tokens.size
     assert(tokens.map(&:type).all? { |t| t == :number_literal })
   end
 
   test "scanner emits errors for invalid chars" do
-    omit 'handling others'
     invalid_chars = '#@^'
     scanner = Rlox::Scanner.new(invalid_chars)
     scanner.scan_tokens
@@ -79,7 +69,6 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "scanner emits errors for unclosed string" do
-    omit 'handling others'
     scanner = Rlox::Scanner.new('"this is a string')
     scanner.scan_tokens
     assert scanner.errors.any?
@@ -87,7 +76,6 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "scanner handles invalid number error" do
-    omit 'handling others'
     scanner = Rlox::Scanner.new("12. ")
     scanner.scan_tokens
     assert scanner.errors.any?
@@ -95,11 +83,9 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "scanner handles identifiers" do
-    omit 'handling others'
     tokens = Rlox::Scanner.new("orchid variable213 fooBarBiz Baz _HERP__").scan_tokens
     assert_equal 5, tokens.size
     assert(tokens.map(&:type).all? { |t| t == :identifier })
-    puts tokens.inspect
   end
 
   test "scanner handles reserved words" do
