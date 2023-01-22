@@ -42,4 +42,10 @@ class TokenizerTest < Test::Unit::TestCase
     assert_equal 'e', tokenizer.advance_index.current_slice
     assert_equal :else, tokenizer.scan.type
   end
+
+  test 'Tokenizer#scan handles clumped equals signs' do
+    tokenizer = Rlox::Tokenizer.new('===')
+    assert_equal :equal_equal, tokenizer.advance_index.scan.type
+    assert_equal :equal, tokenizer.advance_index.scan.type
+  end
 end

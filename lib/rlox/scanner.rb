@@ -8,6 +8,7 @@ module Rlox
   # Tokenizes provided source code into tokens
   class Tokenizer
     attr_reader :source
+    attr_accessor :start_index, :current_index
 
     def initialize(source)
       @source = source
@@ -21,7 +22,7 @@ module Rlox
       token = nil
       tokenizers.each do |tokenizer|
         if (token = tokenizer.token)
-          @start_index = @current_index
+          tokenizer.set_indexes(self)
           break
         end
       end
@@ -53,7 +54,7 @@ module Rlox
 
     def at_end?(peek_amount = 0)
       @last_peek_amt = peek_amount
-      @current_index + peek_amount > source.length
+      @current_index + peek_amount >= source.length
     end
 
     def leftovers

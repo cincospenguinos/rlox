@@ -39,6 +39,11 @@ module Rlox
       token.string.size
     end
 
+    def set_indexes(tokenizer)
+      tokenizer.start_index += token.string.size
+      tokenizer.current_index = tokenizer.start_index
+    end
+
     protected
 
     def advance_tokenizer_until_whitespace_or_end
