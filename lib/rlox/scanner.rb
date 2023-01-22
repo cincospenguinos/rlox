@@ -22,20 +22,18 @@ module Rlox
       token = nil
       tokenizers.each do |tokenizer|
         # byebug if tokenizer.is_a?(ReservedWordTokenizer)
-        if (token = tokenizer.token)
-          # TODO: Maybe we can inline what this does, given we have the token
-          tokenizer.set_indexes(self)
-          break
-        end
+        next unless (token = tokenizer.token)
+
+        @start_index += token.string.size
+        @current_index = @start_index
+        break
       end
 
       token
     end
 
     def advance_index
-      if !current_slice.match(/\s/)
-        @current_index += 1
-      end
+      @current_index += 1 unless current_slice.match(/\s/)
 
       while current_slice.match(/\s/)
         @current_index += 1

@@ -39,11 +39,6 @@ module Rlox
       token.string.size
     end
 
-    def set_indexes(tokenizer)
-      tokenizer.start_index += token.string.size
-      tokenizer.current_index = tokenizer.start_index
-    end
-
     protected
 
     def advance_until_whitespace_end_or_non_word
@@ -153,14 +148,7 @@ module Rlox
     def token
       return nil unless tokenizer.current_slice =~ /[0-9]+/
 
-      while true
-        break if tokenizer.at_end?
-
-        slice = tokenizer.current_slice(1)
-        break if slice.match(/\s/)
-        break if slice.match(/\D/) && !slice.include?('.')
-        tokenizer.advance_index
-      end
+      advance_until_failed_match
 
       if UNBOUNDED_DECIMAL_PATTERN =~ tokenizer.current_slice
         raise Rlox::ScanError,
@@ -171,6 +159,20 @@ module Rlox
       end
 
       nil
+    end
+
+    private
+
+    def advance_until_failed_match
+      loop do
+        break if tokenizer.at_end?
+
+        slice = tokenizer.current_slice(1)
+        break if slice.match(/\s/)
+        break if slice.match(/\D/) && !slice.include?(".")
+
+        tokenizer.advance_index
+      end
     end
   end
 
@@ -214,7 +216,7 @@ module Rlox
       "this" => Token.new(type: :this, string: "this"),
       "true" => Token.new(type: :true, string: "true"),
       "var" => Token.new(type: :var, string: "var"),
-      "while" => Token.new(type: :while, string: "while"),
+      "while" => Token.new(type: :while, string: "while")
     }.freeze
 
     def initialize(tokenizer)
