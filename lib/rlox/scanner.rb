@@ -21,17 +21,27 @@ module Rlox
       token = nil
       tokenizers.each do |tokenizer|
         if (token = tokenizer.token)
-          @current_index += tokenizer.chars_consumed - 1
+          @start_index = @current_index
           break
         end
       end
 
-      @start_index = @current_index if !token.nil? || current_slice =~ /\s+/
       token
     end
 
     def advance_index
-      @current_index += 1
+      if current_slice == ' '
+        @current_index += 1
+        @start_index += 1
+      else
+        @current_index += 1
+      end
+
+      while current_slice == ' '
+        @current_index += 1
+        @start_index += 1
+      end
+
       self
     end
 
@@ -70,7 +80,8 @@ module Rlox
     def tokenizers
       [SingleCharTokenizer.new(self), OperatorTokenizer.new(self),
        SlashOrCommentTokenizer.new(self), StringLiteralTokenizer.new(self),
-       NumberLiteralTokenizer.new(self)]
+       NumberLiteralTokenizer.new(self), ReservedWordTokenizer.new(self),
+       IdentifierTokenizer.new(self)]
     end
   end
 

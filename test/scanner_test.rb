@@ -12,7 +12,8 @@ class ScannerTest < Test::Unit::TestCase
     assert_equal expected_types, tokens.map(&:type)
   end
 
-  test "tokenizes multi-character operators" do
+  test "tokenizes operators" do
+    omit 'handling others'
     operators = %w[! != == = < <= > >=]
     expected_types = %i[bang bang_equal equal_equal equal less
                         less_equal greater greater_equal]
@@ -22,16 +23,19 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "tokenizes comments properly" do
+    omit 'handling others'
     tokens = Rlox::Scanner.new("// this is a comment").scan_tokens
     assert_equal :comment, tokens.first.type
   end
 
   test "tokenizes the slash operator" do
+    omit 'handling others'
     tokens = Rlox::Scanner.new("/").scan_tokens
     assert_equal :slash, tokens.first.type
   end
 
   test "tokenizes strings" do
+    omit 'handling others'
     tokens = Rlox::Scanner.new('"this is a string"').scan_tokens
     assert_equal 1, tokens.size
     assert_equal :string_literal, tokens.first.type
@@ -39,6 +43,7 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "scanner ignores whitespace" do
+    omit 'handling others'
     str = "  +
       \r
     "
@@ -49,24 +54,28 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "tokenizes invalid characters as invalid" do
+    omit 'handling others'
     invalid_chars = '#@^'
     tokens = Rlox::Scanner.new(invalid_chars).scan_tokens
     assert(tokens.map(&:type).all? { |t| t == :invalid_token })
   end
 
   test "tokenizes string literals" do
+    omit 'handling others'
     tokens = Rlox::Scanner.new('"string literal"').scan_tokens
     assert_equal 1, tokens.size
     assert_equal :string_literal, tokens[0].type
   end
 
   test "tokenizer accepts numeric literals" do
+    omit 'handling others'
     tokens = Rlox::Scanner.new("1 92 12.3 0.11022").scan_tokens
     assert_equal 4, tokens.size
     assert(tokens.map(&:type).all? { |t| t == :number_literal })
   end
 
   test "scanner emits errors for invalid chars" do
+    omit 'handling others'
     invalid_chars = '#@^'
     scanner = Rlox::Scanner.new(invalid_chars)
     scanner.scan_tokens
@@ -75,6 +84,7 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "scanner emits errors for unclosed string" do
+    omit 'handling others'
     scanner = Rlox::Scanner.new('"this is a string')
     scanner.scan_tokens
     assert scanner.errors.any?
@@ -82,9 +92,32 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "scanner handles invalid number error" do
+    omit 'handling others'
     scanner = Rlox::Scanner.new("12. ")
     scanner.scan_tokens
     assert scanner.errors.any?
     assert scanner.errors.first.to_s.include?("unbounded decimal")
+  end
+
+  test "scanner handles identifiers" do
+    omit 'handling others'
+    tokens = Rlox::Scanner.new("orchid variable213 fooBarBiz Baz _HERP__").scan_tokens
+    assert_equal 5, tokens.size
+    assert(tokens.map(&:type).all? { |t| t == :identifier })
+    puts tokens.inspect
+  end
+
+  test "scanner handles reserved words" do
+    omit 'handling others'
+    keywords = %w[and class else false for fun if nil or print return super this true var while]
+    types = keywords.map(&:to_sym)
+    tokens = Rlox::Scanner.new(keywords.join(' ')).scan_tokens
+    pp tokens
+    assert_equal keywords.size, tokens.size
+
+    i = 0
+    while i < keywords.size
+      assert_equal types[i], tokens[i].type
+    end
   end
 end

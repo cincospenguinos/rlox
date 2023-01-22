@@ -38,6 +38,12 @@ module Rlox
 
       token.string.size
     end
+
+    protected
+
+    def advance_tokenizer_until_whitespace_or_end
+      tokenizer.advance_index until tokenizer.current_slice(1) =~ /\s+/ || tokenizer.at_end?
+    end
   end
 
   ## OperatorTokenizer
@@ -126,7 +132,7 @@ module Rlox
     end
   end
 
-  ## NumberLiterealTokenizer
+  ## NumberLiteralTokenizer
   class NumberLiteralTokenizer < SingleCharTokenizer
     NUMBER_LITERAL_PATTERN = /\A[0-9]+(\.[0-9]+)?\z/.freeze
     UNBOUNDED_DECIMAL_PATTERN = /\A[0-9]+\.\z/.freeze
@@ -151,11 +157,63 @@ module Rlox
 
       nil
     end
+  end
 
-    private
+  ## IdentifierTokenizer
+  class IdentifierTokenizer < SingleCharTokenizer
+    ALPHANUMERIC_PATTERN = /\A[a-z_A-Z]+[a-zA-Z_0-9]*\z/.freeze
 
-    def advance_tokenizer_until_whitespace_or_end
-      tokenizer.advance_index until tokenizer.current_slice(1) =~ /\s+/ || tokenizer.at_end?
+    def initialize(tokenizer)
+      super(tokenizer)
+      @token = nil
+    end
+
+    def token
+      return nil unless tokenizer.current_slice =~ /[a-zA-Z_]+/
+
+      advance_tokenizer_until_whitespace_or_end
+
+      if ALPHANUMERIC_PATTERN =~ tokenizer.current_slice
+        return Token.new(type: :identifier, string: tokenizer.current_slice)
+      end
+
+      nil
+    end
+  end
+
+  ## ReservedWordTokenizer
+  class ReservedWordTokenizer < SingleCharTokenizer
+    RESERVED_WORDS = {
+      "and" => Token.new(type: :and, string: "and"),
+      "class" => Token.new(type: :class, string: "class"),
+      "else" => Token.new(type: :else, string: "else"),
+      "false" => Token.new(type: :false, string: "false"),
+      "for" => Token.new(type: :for, string: "for"),
+      "fun" => Token.new(type: :fun, string: "fun"),
+      "if" => Token.new(type: :if, string: "if"),
+      "nil" => Token.new(type: :nil, string: "nil"),
+      "or" => Token.new(type: :or, string: "or"),
+      "print" => Token.new(type: :print, string: "print"),
+      "return" => Token.new(type: :return, string: "return"),
+      "super" => Token.new(type: :super, string: "super"),
+      "this" => Token.new(type: :this, string: "this"),
+      "true" => Token.new(type: :true, string: "true"),
+      "var" => Token.new(type: :var, string: "var"),
+      "while" => Token.new(type: :while, string: "while"),
+    }.freeze
+
+    def initialize(tokenizer)
+      super(tokenizer)
+      @token = nil
+    end
+
+    def token
+      advance_tokenizer_until_whitespace_or_end
+
+      slice = tokenizer.current_slice
+      return RESERVED_WORDS[slice].clone if RESERVED_WORDS.keys.include?(slice)
+
+      nil
     end
   end
 end
