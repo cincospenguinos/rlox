@@ -109,13 +109,12 @@ class ScannerTest < Test::Unit::TestCase
     print biz;
     PROGRAM
 
-    token_types = %i(print string_literal var identifier equal number_literal
+    token_types = %i(print string_literal semicolon var identifier equal number_literal
       semicolon var identifier equal identifier plus number_literal semicolon
       print identifier semicolon)
 
     scanner = Rlox::Scanner.new(program)
     tokens = scanner.scan_tokens
-    puts tokens.inspect
     assert_equal 0, scanner.errors.size
     assert_equal token_types, tokens.map(&:type)
   end
