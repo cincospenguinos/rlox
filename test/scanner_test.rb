@@ -39,7 +39,6 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "scanner ignores whitespace" do
-    omit 'handling others'
     str = "  +
       \r
     "

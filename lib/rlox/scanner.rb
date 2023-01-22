@@ -32,11 +32,11 @@ module Rlox
     end
 
     def advance_index
-      if current_slice != ' '
+      if !current_slice.match(/\s/)
         @current_index += 1
       end
 
-      while current_slice == ' '
+      while current_slice.match(/\s/)
         @current_index += 1
         @start_index += 1
       end
