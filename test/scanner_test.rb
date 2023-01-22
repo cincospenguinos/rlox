@@ -100,4 +100,23 @@ class ScannerTest < Test::Unit::TestCase
       i += 1
     end
   end
+
+  test "scanner handles a full program" do
+    program = <<~PROGRAM
+    print "Hello, world!";
+    var foo = 12;
+    var biz = foo + 12;
+    print biz;
+    PROGRAM
+
+    token_types = %i(print string_literal var identifier equal number_literal
+      semicolon var identifier equal identifier plus number_literal semicolon
+      print identifier semicolon)
+
+    scanner = Rlox::Scanner.new(program)
+    tokens = scanner.scan_tokens
+    puts tokens.inspect
+    assert_equal 0, scanner.errors.size
+    assert_equal token_types, tokens.map(&:type)
+  end
 end

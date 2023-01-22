@@ -153,8 +153,10 @@ module Rlox
 
       while true
         break if tokenizer.at_end?
-        break if tokenizer.current_slice(1).match(/\s/)
-        break if tokenizer.current_slice(1).match(/\D/) && !tokenizer.current_slice(1).include?('.')
+
+        slice = tokenizer.current_slice(1)
+        break if slice.match(/\s/)
+        break if slice.match(/\D/) && !slice.include?('.')
         tokenizer.advance_index
       end
 
@@ -182,7 +184,10 @@ module Rlox
     def token
       return nil unless tokenizer.current_slice =~ /[a-zA-Z_]+/
 
-      advance_tokenizer_until_whitespace_or_end
+      # TODO: This is duplicated as well, and we may not need the whitespace shpeal
+      until tokenizer.current_slice(1) =~ /\s+/ || tokenizer.at_end? || tokenizer.current_slice(1).match(/\W/)
+        tokenizer.advance_index
+      end
 
       if ALPHANUMERIC_PATTERN =~ tokenizer.current_slice
         return Token.new(type: :identifier, string: tokenizer.current_slice)
@@ -219,7 +224,10 @@ module Rlox
     end
 
     def token
-      advance_tokenizer_until_whitespace_or_end
+      # TODO: Guard clase?
+      until tokenizer.current_slice(1) =~ /\s+/ || tokenizer.at_end? || tokenizer.current_slice(1).match(/\W/)
+        tokenizer.advance_index
+      end
 
       slice = tokenizer.current_slice
       return RESERVED_WORDS[slice].clone if RESERVED_WORDS.keys.include?(slice)
