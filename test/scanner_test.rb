@@ -13,7 +13,6 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "tokenizes operators" do
-    omit 'handling others'
     operators = %w[! != == = < <= > >=]
     expected_types = %i[bang bang_equal equal_equal equal less
                         less_equal greater greater_equal]
@@ -23,19 +22,16 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "tokenizes comments properly" do
-    omit 'handling others'
     tokens = Rlox::Scanner.new("// this is a comment").scan_tokens
     assert_equal :comment, tokens.first.type
   end
 
   test "tokenizes the slash operator" do
-    omit 'handling others'
     tokens = Rlox::Scanner.new("/").scan_tokens
     assert_equal :slash, tokens.first.type
   end
 
   test "tokenizes strings" do
-    omit 'handling others'
     tokens = Rlox::Scanner.new('"this is a string"').scan_tokens
     assert_equal 1, tokens.size
     assert_equal :string_literal, tokens.first.type

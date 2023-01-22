@@ -22,6 +22,7 @@ module Rlox
       token = nil
       tokenizers.each do |tokenizer|
         if (token = tokenizer.token)
+          # TODO: Maybe we can inline what this does, given we have the token
           tokenizer.set_indexes(self)
           break
         end
@@ -31,6 +32,7 @@ module Rlox
     end
 
     def advance_index
+      # TODO: This can be refactored, handling the non-space case and then looping on the space case
       if current_slice == ' '
         @current_index += 1
         @start_index += 1
