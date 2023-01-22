@@ -89,16 +89,15 @@ class ScannerTest < Test::Unit::TestCase
   end
 
   test "scanner handles reserved words" do
-    omit 'handling others'
     keywords = %w[and class else false for fun if nil or print return super this true var while]
     types = keywords.map(&:to_sym)
     tokens = Rlox::Scanner.new(keywords.join(' ')).scan_tokens
-    pp tokens
     assert_equal keywords.size, tokens.size
 
     i = 0
     while i < keywords.size
       assert_equal types[i], tokens[i].type
+      i += 1
     end
   end
 end
