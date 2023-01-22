@@ -151,7 +151,12 @@ module Rlox
     def token
       return nil unless tokenizer.current_slice =~ /[0-9]+/
 
-      tokenizer.advance_index  while tokenizer.current_slice(1).match(NUMBER_LITERAL_PATTERN)
+      while true
+        break if tokenizer.at_end?
+        break if tokenizer.current_slice(1).match(/\s/)
+        break if tokenizer.current_slice(1).match(/\D/) && !tokenizer.current_slice(1).include?('.')
+        tokenizer.advance_index
+      end
 
       if UNBOUNDED_DECIMAL_PATTERN =~ tokenizer.current_slice
         raise Rlox::ScanError,
