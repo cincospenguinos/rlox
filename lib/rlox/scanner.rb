@@ -121,7 +121,6 @@ module Rlox
     private
 
     def acquire_token
-      # byebug
       token = tokenizer.advance_index.scan
     rescue Rlox::ScanError => e
       @errors << e

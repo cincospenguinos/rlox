@@ -48,4 +48,10 @@ class TokenizerTest < Test::Unit::TestCase
     assert_equal :equal_equal, tokenizer.advance_index.scan.type
     assert_equal :equal, tokenizer.advance_index.scan.type
   end
+
+  test 'Tokenizer#scan handles number literals next to semicolons' do
+    tokenizer = Rlox::Tokenizer.new('12;')
+    assert_equal :number_literal, tokenizer.advance_index.scan.type
+    assert_equal :semicolon, tokenizer.advance_index.scan.type
+  end
 end
