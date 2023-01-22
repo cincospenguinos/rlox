@@ -118,6 +118,7 @@ module Rlox
       return @token unless @token.nil?
       return nil unless tokenizer.current_slice == '"'
 
+      # TODO: We should not need this at_end_disregard function. Why the off-by-one?
       peek_amt = 1
       until tokenizer.at_end_disregard_source_length?(peek_amt) || !@token.nil?
         acquire_token_at(peek_amt)

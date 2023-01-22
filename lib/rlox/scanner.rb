@@ -32,11 +32,7 @@ module Rlox
     end
 
     def advance_index
-      # TODO: This can be refactored, handling the non-space case and then looping on the space case
-      if current_slice == ' '
-        @current_index += 1
-        @start_index += 1
-      else
+      if current_slice != ' '
         @current_index += 1
       end
 
