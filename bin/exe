@@ -11,7 +11,7 @@ if ARGV.length > 1
   print_usage
   exit 64
 elsif ARGV.length == 1
-  # handle file
+  # TODO: handle file
 end
 
 lox = RLox::Lox.new
