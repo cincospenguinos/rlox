@@ -29,6 +29,42 @@ EXPRESSION_DEFS = [
   'Unary    : operator_token, right_expression',
 ]
 
+class ExpressionClassGeneration
+  attr_reader :class_name
+  attr_reader :instance_vars
+
+  def initialize(class_name, instance_vars)
+    @class_name = class_name
+    @instance_vars = instance_vars
+  end
+
+  def to_s
+    <<~EXPRESSION_CLASS_STR
+class #{class_name} < #{BASE_CLASS_NAME}
+  #{instance_var_attr_string}
+
+  def initialize(#{instance_vars.join(', ')})
+#{instance_var_assignment_string}
+  end
+end
+    EXPRESSION_CLASS_STR
+  end
+
+  private
+
+  def instance_var_attr_string
+    str = instance_vars.map { |i| ":#{i}"}
+      .join(', ')
+    
+    "attr_reader #{str}"
+  end
+
+  def instance_var_assignment_string
+    instance_vars.map { |i| "    @#{i} = #{i}" }
+      .join("\n")
+  end
+end
+
 File.open(ARGV[0], 'w') do |f|
   f.puts(FILE_HEADER)
 
@@ -37,15 +73,7 @@ File.open(ARGV[0], 'w') do |f|
     fields = type.split(':')[1].strip
     instance_names = fields.split(',').map(&:strip)
 
-    f.puts "  class #{class_name} < #{BASE_CLASS_NAME}"
-    instance_names.map { |i| ":#{i}" }
-      .each { |instance_var| f.puts("    attr_reader #{instance_var}") }
-    f.puts ''
-    f.puts "    def initialize(#{fields})"
-    instance_names.map { |i| "@#{i} = #{i} "}
-      .each { |line| f.puts("      #{line}") }
-    f.puts '    end'
-    f.puts '  end'
+    f.puts ExpressionClassGeneration.new(class_name, instance_names).to_s
   end
 
   f.puts('end')
