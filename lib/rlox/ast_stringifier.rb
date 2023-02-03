@@ -11,15 +11,16 @@ module Rlox
 
     def visit_binary_expr(binary_expr)
       parenthesize(binary_expr.operator_token.to_s, binary_expr.left_expression,
-        binary_expr.right_expression)
+                   binary_expr.right_expression)
     end
 
     def visit_grouping_expr(grouping_expr)
-      parenthesize('group', grouping_expr.expression)
+      parenthesize("group", grouping_expr.expression)
     end
 
     def visit_literal_expr(literal_expr)
-      return 'nil' if literal_expr.literal_value.type == :nil
+      return "nil" if literal_expr.literal_value.type == :nil
+
       literal_expr.literal_value.to_s
     end
 
@@ -33,7 +34,7 @@ module Rlox
       str = "(#{expr_name}"
 
       exprs.each do |expr|
-        str +=  " #{expr.accept(self)}"
+        str += " #{expr.accept(self)}"
       end
 
       "#{str})"

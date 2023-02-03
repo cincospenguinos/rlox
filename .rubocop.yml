@@ -60,7 +60,7 @@ Lint/EmptyBlock:
   Enabled: true
 
 Lint/EmptyClass:
-  Enabled: true
+  Enabled: false
 
 Lint/EmptyInPattern:
   Enabled: true
@@ -70,6 +70,9 @@ Lint/IncompatibleIoSelectWithFiberScheduler:
 
 Lint/LambdaWithoutLiteralBlock:
   Enabled: true
+
+Lint/MissingSuper:
+  Enabled: false
 
 Lint/NoReturnInBeginEndBlocks:
   Enabled: true
@@ -127,6 +130,9 @@ Style/ArgumentsForwarding:
 
 Style/CollectionCompact:
   Enabled: true
+
+Style/Documentation:
+  Enabled: false
 
 Style/DocumentDynamicEvalDefinition:
   Enabled: true
