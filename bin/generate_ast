@@ -43,11 +43,15 @@ class ExpressionClassGeneration
 
   def to_s
     <<~EXPRESSION_CLASS_STR
-class #{class_name} < #{BASE_CLASS_NAME}
+class #{class_name}#{BASE_CLASS_NAME} < #{BASE_CLASS_NAME}
   #{instance_var_attr_string}
 
   def initialize(#{instance_vars.join(', ')})
 #{instance_var_assignment_string}
+  end
+
+  def accept(visitor)
+    return visitor.visit_#{class_name.downcase}_expr(self)
   end
 end
     EXPRESSION_CLASS_STR

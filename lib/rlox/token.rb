@@ -1,7 +1,17 @@
 # frozen_string_literal: true
 
 module Rlox
-  Token = Struct.new(:type, :string, keyword_init: true)
+  class Token
+    attr_reader :type, :string
+    def initialize(type:, string:)
+      @type = type
+      @string = string
+    end
+
+    def to_s
+      @string
+    end
+  end
 
   ## SingleCharTokenizer
   class SingleCharTokenizer

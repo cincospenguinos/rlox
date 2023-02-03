@@ -5,7 +5,7 @@ module Rlox
   class Expr
   end
 
-class Binary < Expr
+class BinaryExpr < Expr
   attr_reader :left_expression, :operator_token, :right_expression
 
   def initialize(left_expression, operator_token, right_expression)
@@ -13,27 +13,43 @@ class Binary < Expr
     @operator_token = operator_token
     @right_expression = right_expression
   end
+
+  def accept(visitor)
+    return visitor.visit_binary_expr(self)
+  end
 end
-class Grouping < Expr
+class GroupingExpr < Expr
   attr_reader :expression
 
   def initialize(expression)
     @expression = expression
   end
+
+  def accept(visitor)
+    return visitor.visit_grouping_expr(self)
+  end
 end
-class Literal < Expr
+class LiteralExpr < Expr
   attr_reader :literal_value
 
   def initialize(literal_value)
     @literal_value = literal_value
   end
+
+  def accept(visitor)
+    return visitor.visit_literal_expr(self)
+  end
 end
-class Unary < Expr
+class UnaryExpr < Expr
   attr_reader :operator_token, :right_expression
 
   def initialize(operator_token, right_expression)
     @operator_token = operator_token
     @right_expression = right_expression
+  end
+
+  def accept(visitor)
+    return visitor.visit_unary_expr(self)
   end
 end
 end
