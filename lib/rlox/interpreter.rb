@@ -8,11 +8,12 @@ module Rlox
     end
 
     def visit_grouping_expr(grouping_expr)
+      evaluate(grouping_expr.expression)
     end
 
     def visit_literal_expr(literal_expr)
       token = literal_expr.literal_value
-      return parse_bool_or_nil(token.string) if %i[false true nil].include?(token.type)
+      return parse_unary_value(token.string) if %i[false true nil].include?(token.type)
 
       case token.type
       when :number_literal
@@ -38,12 +39,16 @@ module Rlox
 
     private
 
-    def parse_bool_or_nil(str)
+    ## parse_unary_value
+    #
+    # Responds with true, false, or nil, matching the string or,
+    # if the string is not false or nil, returns true
+    def parse_unary_value(str)
       return true if str == "true"
       return false if str == "false"
       return nil if str == "nil"
 
-      raise InterpreterError, "'#{str}' is not true, false, or nil!"
+      true
     end
 
     def evaluate(expression)

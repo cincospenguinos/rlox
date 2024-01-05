@@ -64,4 +64,14 @@ class InterpreterTest < Test::Unit::TestCase
     value = Rlox::Interpreter.new.visit_unary_expr(parse_source("!!!false"))
     assert_equal true, value
   end
+
+  test "#visit_unary_expr handles bang literals" do
+    value = Rlox::Interpreter.new.visit_unary_expr(parse_source("!!12"))
+    assert_equal true, value
+  end
+
+  test "#visit_grouping_expr handles arbitrary grouping" do
+    value = Rlox::Interpreter.new.visit_grouping_expr(parse_source("(!!(!true))"))
+    assert_equal false, value
+  end
 end
