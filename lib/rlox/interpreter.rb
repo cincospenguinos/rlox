@@ -82,13 +82,10 @@ module Rlox
     end
 
     def evaluate_arithmetic_expression(operation, left, right)
-      raise_invalid_operation_err!(operation, left) unless valid_value_for_arithmetic_operation?(operation, left)
-      raise_invalid_operation_err!(operation, right) unless valid_value_for_arithmetic_operation?(operation, right)
+      raise_invalid_operation_err!(operation, left) unless valid_arithmetic?(operation, left)
+      raise_invalid_operation_err!(operation, right) unless valid_arithmetic?(operation, right)
 
-      left = left.to_s if operation == :plus && string?(right)
-      right = right.to_s if operation == :plus && string?(left)
-
-      return left + right if operation == :plus
+      return evaluate_plus(left, right) if operation == :plus
       return left - right if operation == :dash
       return left * right if operation == :star
       return left / right if operation == :slash
@@ -96,7 +93,13 @@ module Rlox
       raise InterpreterError, "'#{operation}' is not a valid operator!"
     end
 
-    def valid_value_for_arithmetic_operation?(operation, value)
+    def evaluate_plus(left, right)
+      return left.to_s + right.to_s if string?(left) || string?(right)
+
+      left + right
+    end
+
+    def valid_arithmetic?(operation, value)
       return number?(value) || string?(value) if operation == :plus
 
       number?(value)
