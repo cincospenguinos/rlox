@@ -7,7 +7,7 @@ module Rlox
   class Lox
     def run(source)
       # TODO: Error handling!
-      tokens = Scanner.new(source).scan_tokens
+      tokens = Scanner.new(source).scan
       expression = Parser.new(tokens).parse
       puts interpreter.evaluate!(expression)
     end
