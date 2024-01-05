@@ -4,14 +4,14 @@ require "test_helper"
 
 class ParserTest < Test::Unit::TestCase
   test "#parse! upchucks when unable to create an expression" do
-    tokens = Rlox::Scanner.new(")").scan_tokens
+    tokens = scan_source(")")
     assert tokens.size == 1
 
     assert_raises(Rlox::ParserError, "No valid expression can be made!") { Rlox::Parser.new(tokens).parse! }
   end
 
   test "#parse! upchucks when lacking closing parentheses" do
-    tokens = Rlox::Scanner.new("(!false == true").scan_tokens
+    tokens = scan_source("(!false == true")
     assert tokens.size == 5
 
     assert_raises(Rlox::ParserError, "No matching right paren found!") { Rlox::Parser.new(tokens).parse! }
@@ -20,7 +20,7 @@ class ParserTest < Test::Unit::TestCase
   # TODO: Test synchronize() logic when we handle statements and the like
 
   test "#parse! handles numeric literal" do
-    tokens = Rlox::Scanner.new("123").scan_tokens
+    tokens = scan_source("123")
     assert tokens.size == 1
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -29,7 +29,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles string literal" do
-    tokens = Rlox::Scanner.new('"123"').scan_tokens
+    tokens = scan_source('"123"')
     assert tokens.size == 1
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -38,7 +38,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles true" do
-    tokens = Rlox::Scanner.new("true").scan_tokens
+    tokens = scan_source("true")
     assert tokens.size == 1
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -47,7 +47,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles false" do
-    tokens = Rlox::Scanner.new("false").scan_tokens
+    tokens = scan_source("false")
     assert tokens.size == 1
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -56,7 +56,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles nil" do
-    tokens = Rlox::Scanner.new("nil").scan_tokens
+    tokens = scan_source("nil")
     assert tokens.size == 1
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -65,7 +65,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles unary with negative sign" do
-    tokens = Rlox::Scanner.new("-123").scan_tokens
+    tokens = scan_source("-123")
     assert tokens.size == 2
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -74,7 +74,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles unary with bang operator" do
-    tokens = Rlox::Scanner.new("!false").scan_tokens
+    tokens = scan_source("!false")
     assert tokens.size == 2
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -83,7 +83,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles nested unary" do
-    tokens = Rlox::Scanner.new("!!true").scan_tokens
+    tokens = scan_source("!!true")
     assert tokens.size == 3
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -94,7 +94,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles multiplication" do
-    tokens = Rlox::Scanner.new("2 * 3").scan_tokens
+    tokens = scan_source("2 * 3")
     assert tokens.size == 3
 
     # byebug
@@ -104,7 +104,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles division" do
-    tokens = Rlox::Scanner.new("3/33").scan_tokens
+    tokens = scan_source("3/33")
     assert tokens.size == 3
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -113,7 +113,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles addition" do
-    tokens = Rlox::Scanner.new("1 + 1").scan_tokens
+    tokens = scan_source("1 + 1")
     assert tokens.size == 3
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -122,7 +122,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles subtraction" do
-    tokens = Rlox::Scanner.new("1 - 1").scan_tokens
+    tokens = scan_source("1 - 1")
     assert tokens.size == 3
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -131,7 +131,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles greater than comparison" do
-    tokens = Rlox::Scanner.new("1 + 3 > 4").scan_tokens
+    tokens = scan_source("1 + 3 > 4")
     assert tokens.size == 5
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -140,7 +140,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles less than comparison" do
-    tokens = Rlox::Scanner.new("1 + 3 < 4").scan_tokens
+    tokens = scan_source("1 + 3 < 4")
     assert tokens.size == 5
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -149,7 +149,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles less than or equal to comparison" do
-    tokens = Rlox::Scanner.new("1 + 3 <= 4").scan_tokens
+    tokens = scan_source("1 + 3 <= 4")
     assert tokens.size == 5
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -158,7 +158,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles greater than or equal to comparison" do
-    tokens = Rlox::Scanner.new("1 + 3 >= 4").scan_tokens
+    tokens = scan_source("1 + 3 >= 4")
     assert tokens.size == 5
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -167,7 +167,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles equals" do
-    tokens = Rlox::Scanner.new("1 + 3 == 4").scan_tokens
+    tokens = scan_source("1 + 3 == 4")
     assert tokens.size == 5
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -176,7 +176,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles not equals" do
-    tokens = Rlox::Scanner.new("1 + 3 != 4").scan_tokens
+    tokens = scan_source("1 + 3 != 4")
     assert tokens.size == 5
 
     expr = Rlox::Parser.new(tokens).parse!
@@ -185,7 +185,7 @@ class ParserTest < Test::Unit::TestCase
   end
 
   test "#parse! handles parentheses" do
-    tokens = Rlox::Scanner.new("(false)").scan_tokens
+    tokens = scan_source("(false)")
     assert tokens.size == 3
 
     expr = Rlox::Parser.new(tokens).parse!

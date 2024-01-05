@@ -9,7 +9,7 @@ class TokenizerTest < Test::Unit::TestCase
     assert_equal "f", tokenizer.advance_index.current_slice
   end
 
-  test "Tokenizer#advance_past_last_peek_advances" do
+  test "Tokenizer#advance_past_last_peek advances" do
     tokenizer = Rlox::Tokenizer.new("bar biz")
     assert_equal "b", tokenizer.advance_index.current_slice
     assert_equal "bar", tokenizer.current_slice(2)
