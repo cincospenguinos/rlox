@@ -12,10 +12,17 @@ module Rlox
     end
 
     def next_expression
-      term_rule
+      comparison_rule
     end
 
     private
+
+    # TODO: I do not like having different functions and `send()`. Let's refactor this to
+    # a class hierarchy
+
+    def comparison_rule
+      binary_expr_rule(:term_rule, %i[greater less less_equal greater_equal].freeze)
+    end
 
     def term_rule
       binary_expr_rule(:factor_rule, %i[plus dash].freeze)

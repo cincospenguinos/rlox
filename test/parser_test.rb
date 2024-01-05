@@ -133,4 +133,40 @@ class ParserTest < Test::Unit::TestCase
     assert expr.is_a?(Rlox::BinaryExpr)
     assert expr.operator_token.type == :dash
   end
+
+  test "#next_expression handles greater than comparison" do
+    tokens = Rlox::Scanner.new("1 + 3 > 4").scan_tokens
+    assert tokens.size == 5
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::BinaryExpr)
+    assert expr.operator_token.type == :greater
+  end
+
+  test "#next_expression handles less than comparison" do
+    tokens = Rlox::Scanner.new("1 + 3 < 4").scan_tokens
+    assert tokens.size == 5
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::BinaryExpr)
+    assert expr.operator_token.type == :less
+  end
+
+  test "#next_expression handles less than or equal to comparison" do
+    tokens = Rlox::Scanner.new("1 + 3 <= 4").scan_tokens
+    assert tokens.size == 5
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::BinaryExpr)
+    assert expr.operator_token.type == :less_equal
+  end
+
+  test "#next_expression handles greater than or equal to comparison" do
+    tokens = Rlox::Scanner.new("1 + 3 >= 4").scan_tokens
+    assert tokens.size == 5
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::BinaryExpr)
+    assert expr.operator_token.type == :greater_equal
+  end
 end
