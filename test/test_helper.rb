@@ -11,5 +11,5 @@ def scan_source(source_string)
 end
 
 def parse_source(source_string)
-  Rlox::Parser.new(scan_source(source_string))
+  Rlox::Parser.new(scan_source(source_string)).parse!
 end

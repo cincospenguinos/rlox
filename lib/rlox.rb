@@ -6,6 +6,7 @@ require_relative "rlox/scanner"
 require_relative "rlox/expression"
 require_relative "rlox/ast_stringifier"
 require_relative "rlox/parser"
+require_relative "rlox/interpreter"
 
 module Rlox
   class RloxError < StandardError
