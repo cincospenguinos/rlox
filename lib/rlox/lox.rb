@@ -6,11 +6,10 @@ module Rlox
   # Entrypoint for execution of language.
   class Lox
     def run(source)
+      # TODO: Error handling!
       tokens = Scanner.new(source).scan_tokens
       expression = Parser.new(tokens).parse
-
-      # TODO: Error handling! Expression is nil if we get an error
-      puts AstStringifier.new.stringify(expression)
+      puts interpreter.evaluate!(expression)
     end
 
     def run_file(filepath)
@@ -24,10 +23,19 @@ module Rlox
       loop do
         print "> "
         line = gets
-        break if line.nil?
+        break if line.nil? || line =~ /\A\s*\z/
 
         run(line)
       end
+    rescue InterpreterError => e
+      puts e
+      run_prompt
+    end
+
+    private
+
+    def interpreter
+      @interpreter ||= Interpreter.new
     end
   end
 end
