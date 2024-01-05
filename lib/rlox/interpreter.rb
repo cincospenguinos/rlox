@@ -12,6 +12,8 @@ module Rlox
       right = evaluate(binary_expr.right_expression)
       return evaluate_arithmetic_expression(operator, left, right) if ARITHMETIC_OPERATORS.include?(operator)
       return evaluate_comparison_expression(operator, left, right) if COMPARISON_OPERATORS.include?(operator)
+      return left == right if operator == :equal_equal
+      return left != right if operator == :bang_equal
 
       raise InterpreterError, "'#{binary_expr.operator_token}' is not a valid operator!"
     end

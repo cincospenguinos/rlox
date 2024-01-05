@@ -119,4 +119,14 @@ class InterpreterTest < Test::Unit::TestCase
     value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 <= 0"))
     assert_equal false, value
   end
+
+  test "#visit_binary_expr handles equality" do
+    value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 == 0"))
+    assert_equal false, value
+  end
+
+  test "#visit_binary_expr handles not equality" do
+    value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 == 0"))
+    assert_equal false, value
+  end
 end
