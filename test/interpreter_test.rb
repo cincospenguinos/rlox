@@ -74,4 +74,29 @@ class InterpreterTest < Test::Unit::TestCase
     value = Rlox::Interpreter.new.visit_grouping_expr(parse_source("(!!(!true))"))
     assert_equal false, value
   end
+
+  test "#visit_binary_expr handles addition" do
+    value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 + 2"))
+    assert_equal 3, value
+  end
+
+  test "#visit_binary_expr handles string concatenation" do
+    value = Rlox::Interpreter.new.visit_binary_expr(parse_source('"1" + "2"'))
+    assert_equal "12", value
+  end
+
+  test "#visit_binary_expr handles subtraction" do
+    value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 - 2"))
+    assert_equal -1, value
+  end
+
+  test "#visit_binary_expr handles multiplication" do
+    value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 * 2"))
+    assert_equal 2, value
+  end
+
+  test "#visit_binary_expr handles division" do
+    value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 / 2"))
+    assert_equal 0.5, value
+  end
 end

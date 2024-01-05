@@ -5,6 +5,21 @@ module Rlox
     end
 
     def visit_binary_expr(binary_expr)
+      left = evaluate(binary_expr.left_expression)
+      right = evaluate(binary_expr.right_expression)
+
+      case binary_expr.operator_token.type
+      when :plus
+        left + right
+      when :dash
+        left - right
+      when :star
+        left * right
+      when :slash
+        left / right
+      else
+        raise InterpreterError, "'#{binary_expr.operator_token.to_s}' is not a valid operator!"
+      end
     end
 
     def visit_grouping_expr(grouping_expr)
