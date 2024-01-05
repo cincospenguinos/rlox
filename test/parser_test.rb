@@ -74,4 +74,24 @@ class ParserTest < Test::Unit::TestCase
     assert expr.is_a?(Rlox::UnaryExpr)
     assert expr.operator_token.type == :dash
   end
+
+  test '#next_expression handles unary with bang operator' do
+    tokens = Rlox::Scanner.new('!false').scan_tokens
+    assert tokens.size == 2
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::UnaryExpr)
+    assert expr.operator_token.type == :bang
+  end
+
+  test '#next_expression handles nested unary' do
+    tokens = Rlox::Scanner.new('!!true').scan_tokens
+    assert tokens.size == 3
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::UnaryExpr)
+    assert expr.operator_token.type == :bang
+    assert expr.right_expression.is_a?(Rlox::UnaryExpr)
+    assert expr.right_expression.operator_token.type == :bang
+  end
 end
