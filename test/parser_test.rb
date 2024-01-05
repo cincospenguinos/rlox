@@ -65,4 +65,13 @@ class ParserTest < Test::Unit::TestCase
     assert expr.is_a?(Rlox::LiteralExpr)
     assert_equal expr.literal_value, Rlox::Token.new(type: :nil, string: 'nil')
   end
+
+  test '#next_expression handles unary with negative sign' do
+    tokens = Rlox::Scanner.new('-123').scan_tokens
+    assert tokens.size == 2
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::UnaryExpr)
+    assert expr.operator_token.type == :dash
+  end
 end

@@ -9,19 +9,32 @@ module Rlox
     end
 
     def next_expression
-      return literal_expr if current_matches?(*PRIMARY_EXPR_TYPES)
-
-      nil
+      unary_rule
     end
 
     private
 
-    def literal_expr
-      LiteralExpr.new(current_token)
+    def unary_rule
+      if current_matches?(:dash, :bang)
+        operator = current_token
+        @current_index += 1
+        right_expression = unary_rule
+        return UnaryExpr.new(operator, right_expression)
+      end
+
+      primary_rule
+    end
+
+    def primary_rule
+      LiteralExpr.new(previous_token)
     end
 
     def current_token
       @tokens[@current_index]
+    end
+
+    def previous_token
+      @tokens[@current_index - 1]
     end
 
     def current_matches?(*token_types)
