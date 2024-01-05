@@ -88,7 +88,7 @@ module Rlox
       return evaluate_plus(left, right) if operation == :plus
       return left - right if operation == :dash
       return left * right if operation == :star
-      return left / right if operation == :slash
+      return evaluate_division(left, right) if operation == :slash
 
       raise InterpreterError, "'#{operation}' is not a valid operator!"
     end
@@ -97,6 +97,12 @@ module Rlox
       return left.to_s + right.to_s if string?(left) || string?(right)
 
       left + right
+    end
+
+    def evaluate_division(left, right)
+      raise InterpreterError, "Cannot divide by zero!" if right.zero?
+
+      left / right
     end
 
     def valid_arithmetic?(operation, value)

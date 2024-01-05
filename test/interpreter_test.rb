@@ -185,4 +185,9 @@ class InterpreterTest < Test::Unit::TestCase
     value = Rlox::Interpreter.new.evaluate!(expr)
     assert_equal "twelve12.0", value
   end
+
+  test "#evaluate! does not allow division by zero" do
+    expr = parse_source("12 / 0")
+    assert_raises(Rlox::InterpreterError, "Cannot divide by zero!") { Rlox::Interpreter.new.evaluate!(expr) }
+  end
 end
