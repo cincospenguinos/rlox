@@ -26,7 +26,6 @@ class ParserTest < Test::Unit::TestCase
     assert tokens.size == 1
 
     expr = Rlox::Parser.new(tokens).next_expression
-
     assert expr.is_a?(Rlox::LiteralExpr)
     assert_equal expr.literal_value, Rlox::Token.new(type: :number_literal, string: '123')
   end
@@ -36,8 +35,34 @@ class ParserTest < Test::Unit::TestCase
     assert tokens.size == 1
 
     expr = Rlox::Parser.new(tokens).next_expression
-
     assert expr.is_a?(Rlox::LiteralExpr)
     assert_equal expr.literal_value, Rlox::Token.new(type: :string_literal, string: '"123"')
+  end
+
+  test '#next_expression handles true' do
+    tokens = Rlox::Scanner.new('true').scan_tokens
+    assert tokens.size == 1
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::LiteralExpr)
+    assert_equal expr.literal_value, Rlox::Token.new(type: :true, string: 'true')
+  end
+
+  test '#next_expression handles false' do
+    tokens = Rlox::Scanner.new('false').scan_tokens
+    assert tokens.size == 1
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::LiteralExpr)
+    assert_equal expr.literal_value, Rlox::Token.new(type: :false, string: 'false')
+  end
+
+  test '#next_expression handles nil' do
+    tokens = Rlox::Scanner.new('nil').scan_tokens
+    assert tokens.size == 1
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::LiteralExpr)
+    assert_equal expr.literal_value, Rlox::Token.new(type: :nil, string: 'nil')
   end
 end

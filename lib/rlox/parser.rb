@@ -1,5 +1,6 @@
 module Rlox
   class Parser
+    PRIMARY_EXPR_TYPES = %i(number_literal string_literal true false nil)
     attr_reader :tokens
 
     def initialize(tokens)
@@ -8,12 +9,16 @@ module Rlox
     end
 
     def next_expression
-      return LiteralExpr.new(current_token) if current_matches?(:number_literal, :string_literal)
+      return literal_expr if current_matches?(*PRIMARY_EXPR_TYPES)
 
       nil
     end
 
     private
+
+    def literal_expr
+      LiteralExpr.new(current_token)
+    end
 
     def current_token
       @tokens[@current_index]
