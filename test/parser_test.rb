@@ -182,7 +182,7 @@ class ParserTest < Test::Unit::TestCase
     assert expr.operator_token.type == :bang_equal
   end
 
-  test '#parse handles parentheses' do
+  test "#parse handles parentheses" do
     tokens = Rlox::Scanner.new("(false)").scan_tokens
     assert tokens.size == 3
 

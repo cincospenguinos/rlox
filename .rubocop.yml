@@ -218,3 +218,7 @@ Style/StringChars:
 Style/SwapValues:
   Enabled: true
 
+Metrics/ClassLength:
+  Enabled: true
+  Exclude:
+    - test/*.rb

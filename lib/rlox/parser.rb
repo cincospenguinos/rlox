@@ -29,7 +29,7 @@ module Rlox
 
     def advance
       @current_index += 1
-      current_token
+      previous_token
     end
 
     def current_matches?(*token_types)
@@ -65,13 +65,12 @@ module Rlox
     # Abstract representation of a binary expression rule. Accepts name of the rule
     # that the one instantiated is to defer to, and what types of tokens to match upon
     # for this instance of the rule.
-    def binary_expr_rule(next_rule_func, types_to_match)
-      left_expr = send(next_rule_func)
+    def binary_expr_rule(higher_precedence_rule, types_to_match)
+      left_expr = send(higher_precedence_rule)
 
       if current_matches?(*types_to_match)
-        advance
-        operator = previous_token
-        right_expr = send(next_rule_func)
+        operator = advance
+        right_expr = send(higher_precedence_rule)
         return BinaryExpr.new(left_expr, operator, right_expr)
       end
 
@@ -80,8 +79,7 @@ module Rlox
 
     def unary_rule
       if current_matches?(:dash, :bang)
-        advance
-        operator = previous_token
+        operator = advance
         right_expression = unary_rule
         return UnaryExpr.new(operator, right_expression)
       end
@@ -90,10 +88,7 @@ module Rlox
     end
 
     def primary_rule
-      if current_matches?(*PRIMARY_RULE_LITERALS)
-        advance
-        return LiteralExpr.new(previous_token)
-      end
+      return LiteralExpr.new(advance) if current_matches?(*PRIMARY_RULE_LITERALS)
 
       if current_matches?(:left_paren)
         advance
@@ -102,13 +97,16 @@ module Rlox
         return GroupingExpr.new(inner_expression)
       end
 
-      raise ParserError.new("No valid expression can be made!")
+      raise ParserError, "No valid expression can be made!"
     end
 
     def consume(token_type, error_message)
-      return advance if current_matches?(:right_paren)
+      if current_matches?(token_type)
+        advance
+        return current_token
+      end
 
-      raise ParserError.new(error_message)
+      raise ParserError, error_message
     end
   end
 end
