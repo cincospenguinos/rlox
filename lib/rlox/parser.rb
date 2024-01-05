@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 module Rlox
   class Parser
-    PRIMARY_EXPR_TYPES = %i(number_literal string_literal true false nil)
+    PRIMARY_EXPR_TYPES = %i[number_literal string_literal true false nil].freeze
 
     attr_reader :tokens
 
@@ -15,28 +17,21 @@ module Rlox
 
     private
 
-    # TODO: term_rule and factor_rule have very similar implementations. Can we
-    # DRY them up somehow?
     def term_rule
-      left_expr = factor_rule
-
-      while current_matches?(:plus, :dash) do
-        advance
-        operator = previous_token
-        right_expr = factor_rule
-        return BinaryExpr.new(left_expr, operator, right_expr)
-      end
-
-      left_expr
+      binary_expr_rule(:factor_rule, %i[plus dash].freeze)
     end
 
     def factor_rule
-      left_expr = unary_rule
+      binary_expr_rule(:unary_rule, %i[star slash].freeze)
+    end
 
-      while current_matches?(:star, :slash) do
+    def binary_expr_rule(next_rule_func, types_to_match)
+      left_expr = send(next_rule_func)
+
+      if current_matches?(*types_to_match)
         advance
         operator = previous_token
-        right_expr = unary_rule
+        right_expr = send(next_rule_func)
         return BinaryExpr.new(left_expr, operator, right_expr)
       end
 
