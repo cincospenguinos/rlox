@@ -15,10 +15,29 @@ module Rlox
       comparison_rule
     end
 
-    private
+    def current_token
+      tokens[@current_index]
+    end
 
-    # TODO: I do not like having different functions and `send()`. Let's refactor this to
-    # a class hierarchy
+    def previous_token
+      tokens[@current_index - 1]
+    end
+
+    def at_end?
+      @current_index >= tokens.size
+    end
+
+    def advance
+      @current_index += 1
+    end
+
+    def current_matches?(*token_types)
+      return false if at_end?
+
+      token_types.any? { |type| current_token.type == type }
+    end
+
+    private
 
     def comparison_rule
       binary_expr_rule(:term_rule, %i[greater less less_equal greater_equal].freeze)
@@ -59,28 +78,6 @@ module Rlox
     def primary_rule
       advance
       LiteralExpr.new(previous_token)
-    end
-
-    def current_token
-      tokens[@current_index]
-    end
-
-    def previous_token
-      tokens[@current_index - 1]
-    end
-
-    def at_end?
-      @current_index >= tokens.size
-    end
-
-    def advance
-      @current_index += 1
-    end
-
-    def current_matches?(*token_types)
-      return false if at_end?
-
-      token_types.any? { |type| current_token.type == type }
     end
   end
 end
