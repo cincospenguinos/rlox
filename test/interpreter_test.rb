@@ -99,4 +99,24 @@ class InterpreterTest < Test::Unit::TestCase
     value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 / 2"))
     assert_equal 0.5, value
   end
+
+  test "#visit_binary_expr handles greater than" do
+    value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 > 2"))
+    assert_equal false, value
+  end
+
+  test "#visit_binary_expr handles greater than or equal" do
+    value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 >= 1"))
+    assert_equal true, value
+  end
+
+  test "#visit_binary_expr handles less than" do
+    value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 < 2"))
+    assert_equal true, value
+  end
+
+  test "#visit_binary_expr handles less than or equal" do
+    value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 <= 0"))
+    assert_equal false, value
+  end
 end

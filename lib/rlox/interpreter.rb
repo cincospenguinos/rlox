@@ -3,6 +3,7 @@
 module Rlox
   class Interpreter
     ARITHMETIC_OPERATORS = %i[plus dash star slash].freeze
+    COMPARISON_OPERATORS = %i[greater less greater_equal less_equal].freeze
     BOOL_TYPES = %i[false true nil].freeze
 
     def visit_binary_expr(binary_expr)
@@ -10,8 +11,9 @@ module Rlox
       left = evaluate(binary_expr.left_expression)
       right = evaluate(binary_expr.right_expression)
       return evaluate_arithmetic_expression(operator, left, right) if ARITHMETIC_OPERATORS.include?(operator)
+      return evaluate_comparison_expression(operator, left, right) if COMPARISON_OPERATORS.include?(operator)
 
-      raise InterpreterError, "'#{expression.operator_token}' is not a valid operator!"
+      raise InterpreterError, "'#{binary_expr.operator_token}' is not a valid operator!"
     end
 
     def visit_grouping_expr(grouping_expr)
@@ -67,6 +69,15 @@ module Rlox
       return left - right if operation == :dash
       return left * right if operation == :star
       return left / right if operation == :slash
+
+      raise InterpreterError, "'#{operation}' is not a valid operator!"
+    end
+
+    def evaluate_comparison_expression(operation, left, right)
+      return left > right if operation == :greater
+      return left >= right if operation == :greater_equal
+      return left < right if operation == :less
+      return left <= right if operation == :less_equal
 
       raise InterpreterError, "'#{operation}' is not a valid operator!"
     end
