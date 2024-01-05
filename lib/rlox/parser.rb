@@ -12,6 +12,12 @@ module Rlox
     end
 
     def parse
+      parse!
+    rescue ParserError
+      nil
+    end
+
+    def parse!
       expression_rule
     end
 

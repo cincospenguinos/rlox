@@ -1,22 +1,21 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require "bundler/setup"
 require "rlox"
 
 def print_usage
-  puts "Usage: jlox [script]"
+  puts "Usage: rlox [script]"
 end
 
 if ARGV.length > 1
   print_usage
   exit 64
-elsif ARGV.length == 1
-  # TODO: handle file
 end
 
-lox = RLox::Lox.new
+lox = Rlox::Lox.new
 
-if ARGV.length == 1
+if ARGV.length != 1
   lox.run_prompt
 else
   lox.run_file(ARGV[0])
