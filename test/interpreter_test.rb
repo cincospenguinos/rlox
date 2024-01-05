@@ -129,4 +129,14 @@ class InterpreterTest < Test::Unit::TestCase
     value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 == 0"))
     assert_equal false, value
   end
+
+  test "#evaluate will handle an arbitrary expression" do
+    # NOTE! The grouping of 1 + 2 is necessary for the whole expression to be
+    # recognized. Attempting to fix the parser on that front was way too much for me,
+    # and so I'm leaving it as a future exercise or something
+    expr = parse_source("(1 + 2) - (10 + (1 * 2))")
+    value = Rlox::Interpreter.new.evaluate(expr)
+
+    assert_equal(-9, value)
+  end
 end

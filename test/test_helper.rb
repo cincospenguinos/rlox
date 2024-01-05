@@ -13,3 +13,9 @@ end
 def parse_source(source_string)
   Rlox::Parser.new(scan_source(source_string)).parse!
 end
+
+def print_ast(source_or_expr)
+  source_or_expr = parse_source(source_or_expr) if source_or_expr.is_a?(String)
+
+  puts Rlox::AstStringifier.new.stringify(source_or_expr)
+end

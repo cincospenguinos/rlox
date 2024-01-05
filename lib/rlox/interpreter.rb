@@ -6,6 +6,10 @@ module Rlox
     COMPARISON_OPERATORS = %i[greater less greater_equal less_equal].freeze
     BOOL_TYPES = %i[false true nil].freeze
 
+    def evaluate(expression)
+      expression.accept(self)
+    end
+
     def visit_binary_expr(binary_expr)
       operator = binary_expr.operator_token.type
       left = evaluate(binary_expr.left_expression)
@@ -60,10 +64,6 @@ module Rlox
       return nil if str == "nil"
 
       true
-    end
-
-    def evaluate(expression)
-      expression.accept(self)
     end
 
     def evaluate_arithmetic_expression(operation, left, right)
