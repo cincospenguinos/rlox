@@ -12,7 +12,7 @@ module Rlox
     end
 
     def next_expression
-      comparison_rule
+      equality_rule
     end
 
     def current_token
@@ -39,6 +39,10 @@ module Rlox
 
     private
 
+    def equality_rule
+      binary_expr_rule(:comparison_rule, %i[equal_equal bang_equal].freeze)
+    end
+
     def comparison_rule
       binary_expr_rule(:term_rule, %i[greater less less_equal greater_equal].freeze)
     end
@@ -51,6 +55,11 @@ module Rlox
       binary_expr_rule(:unary_rule, %i[star slash].freeze)
     end
 
+    ## binary_expr_rule
+    #
+    # Abstract representation of a binary expression rule. Accepts name of the rule
+    # that the one instantiated is to defer to, and what types of tokens to match upon
+    # for this instance of the rule.
     def binary_expr_rule(next_rule_func, types_to_match)
       left_expr = send(next_rule_func)
 

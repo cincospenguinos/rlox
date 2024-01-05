@@ -169,4 +169,22 @@ class ParserTest < Test::Unit::TestCase
     assert expr.is_a?(Rlox::BinaryExpr)
     assert expr.operator_token.type == :greater_equal
   end
+
+  test "#next_expression handles equals" do
+    tokens = Rlox::Scanner.new("1 + 3 == 4").scan_tokens
+    assert tokens.size == 5
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::BinaryExpr)
+    assert expr.operator_token.type == :equal_equal
+  end
+
+  test "#next_expression handles not equals" do
+    tokens = Rlox::Scanner.new("1 + 3 != 4").scan_tokens
+    assert tokens.size == 5
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::BinaryExpr)
+    assert expr.operator_token.type == :bang_equal
+  end
 end
