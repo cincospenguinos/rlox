@@ -23,4 +23,25 @@ class InterpreterTest < Test::Unit::TestCase
 
     assert_equal "1234", interpreter.visit_literal_expr(expr)
   end
+
+  test "#visit_literal_expr responds with true" do
+    expr = parse_source('true')
+    interpreter = Rlox::Interpreter.new
+
+    assert_equal true, interpreter.visit_literal_expr(expr)
+  end
+
+  test "#visit_literal_expr responds with false" do
+    expr = parse_source('false')
+    interpreter = Rlox::Interpreter.new
+
+    assert_equal false, interpreter.visit_literal_expr(expr)
+  end
+
+  test "#visit_literal_expr responds with nil" do
+    expr = parse_source('nil')
+    interpreter = Rlox::Interpreter.new
+
+    assert_equal nil, interpreter.visit_literal_expr(expr)
+  end
 end

@@ -25,4 +25,6 @@ module Rlox
   class ScanError < RloxError; end
 
   class ParserError < RloxError; end
+
+  class InterpreterError < RloxError; end
 end

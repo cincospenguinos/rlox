@@ -11,19 +11,30 @@ module Rlox
     end
 
     def visit_literal_expr(literal_expr)
-      literal_token = literal_expr.literal_value
+      token = literal_expr.literal_value
+      return parse_bool_or_nil(token.string) if %i[false true nil].include?(token.type)
 
-      case literal_token.type
+      case token.type
       when :number_literal
-        literal_token.string.to_f
+        token.string.to_f
       when :string_literal
-        "#{literal_token.string.gsub('"', '')}"
+        "#{token.string.gsub('"', '')}"
       else
-        # TODO: Raise, probably
+        raise InterpreterError, "\"#{literal_expr.to_s}\" does not match literal type!"
       end
     end
 
     def visit_unary_expr(unary_expr)
+    end
+
+    private
+
+    def parse_bool_or_nil(str)
+      return true if str == "true"
+      return false if str == "false"
+      return nil if str == "nil"
+
+      raise InterpreterError, "\"#{str}\" is not true, false, or nil!"
     end
   end
 end
