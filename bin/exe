@@ -15,8 +15,8 @@ end
 
 lox = Rlox::Lox.new
 
-if ARGV.length != 1
-  lox.run_prompt
-else
+if ARGV.length == 1
   lox.run_file(ARGV[0])
+else
+  lox.run_prompt
 end
