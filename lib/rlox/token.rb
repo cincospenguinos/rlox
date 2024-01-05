@@ -12,6 +12,12 @@ module Rlox
     def to_s
       @string
     end
+
+    def ==(other)
+      return false unless other.is_a?(Token)
+
+      other.type == @type && other.string == @string
+    end
   end
 
   ## SingleCharTokenizer

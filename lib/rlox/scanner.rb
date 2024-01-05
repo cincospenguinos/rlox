@@ -21,7 +21,6 @@ module Rlox
     def scan
       token = nil
       tokenizers.each do |tokenizer|
-        # byebug if tokenizer.is_a?(ReservedWordTokenizer)
         next unless (token = tokenizer.token)
 
         @start_index += token.string.size
