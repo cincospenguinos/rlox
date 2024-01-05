@@ -98,11 +98,11 @@ module Rlox
       if current_matches?(:left_paren)
         advance
         inner_expression = expression_rule
-        consume(:right_paren, 'No matching right paren found!')
+        consume(:right_paren, "No matching right paren found!")
         return GroupingExpr.new(inner_expression)
       end
 
-      # TODO: Raise here, right?
+      raise ParserError.new("No valid expression can be made!")
     end
 
     def consume(token_type, error_message)

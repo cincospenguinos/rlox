@@ -2,26 +2,20 @@
 
 require "test_helper"
 
-# So the order of precedence needs to be
-# equality
-# comparison
-# addition
-# multiplication
-# unary
-#
-# Here"s the grammar we"re doing now:
-# expression     → equality ;
-# equality       → comparison ( ( "!=" | "==" ) comparison )* ;
-# comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
-# term           → factor ( ( "-" | "+" ) factor )* ;
-# factor         → unary ( ( "/" | "*" ) unary )* ;
-# unary          → ( "!" | "-" ) unary
-#                | primary ;
-# primary        → NUMBER | STRING | "true" | "false" | "nil"
-#                | "(" expression ")" ;
-
 class ParserTest < Test::Unit::TestCase
-  # TODO: Test upchucking on non-literal token
+  test "#parse upchucks when unable to create an expression" do
+    tokens = Rlox::Scanner.new(")").scan_tokens
+    assert tokens.size == 1
+
+    assert_raises(Rlox::ParserError, "No valid expression can be made!") { Rlox::Parser.new(tokens).parse }
+  end
+
+  test "#parse upchucks when lacking closing parentheses" do
+    tokens = Rlox::Scanner.new("(!false == true").scan_tokens
+    assert tokens.size == 5
+
+    assert_raises(Rlox::ParserError, "No matching right paren found!") { Rlox::Parser.new(tokens).parse }
+  end
 
   test "#parse handles numeric literal" do
     tokens = Rlox::Scanner.new("123").scan_tokens

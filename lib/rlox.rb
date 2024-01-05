@@ -8,12 +8,7 @@ require_relative "rlox/ast_stringifier"
 require_relative "rlox/parser"
 
 module Rlox
-  class Error < StandardError; end
-
-  # ScanError
-  #
-  # Error to apper when scanning
-  class ScanError < StandardError
+  class RloxError < StandardError
     attr_reader :message
 
     def initialize(message)
@@ -25,4 +20,8 @@ module Rlox
       @message
     end
   end
+
+  class ScanError < RloxError; end
+
+  class ParserError < RloxError; end
 end
