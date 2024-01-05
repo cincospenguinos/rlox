@@ -118,4 +118,12 @@ class ScannerTest < Test::Unit::TestCase
     assert_equal 0, scanner.errors.size
     assert_equal token_types, tokens.map(&:type)
   end
+
+  test "#scan appends EOF token" do
+    program = "1 2"
+    tokens = Rlox::Scanner.new(program).scan
+
+    assert_equal 3, tokens.size
+    assert_equal :EOF, tokens[-1].type
+  end
 end

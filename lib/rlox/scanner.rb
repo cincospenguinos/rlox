@@ -99,6 +99,10 @@ module Rlox
       @tokenizer = Tokenizer.new(source)
     end
 
+    def scan
+      scan_tokens + [Token.new(type: :EOF, string: nil)]
+    end
+
     def scan_tokens
       tokens = []
 
