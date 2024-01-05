@@ -44,4 +44,24 @@ class InterpreterTest < Test::Unit::TestCase
 
     assert_equal nil, interpreter.visit_literal_expr(expr)
   end
+
+  test "#visit_unary_expr handles negative operation" do
+    expr = parse_source("-977112")
+    value = Rlox::Interpreter.new.visit_unary_expr(expr)
+
+    assert_equal -977112, value
+  end
+
+  test "#visit_unary_expr handles not bool" do
+    value = Rlox::Interpreter.new.visit_unary_expr(parse_source("!false"))
+    assert_equal true, value
+
+    value = Rlox::Interpreter.new.visit_unary_expr(parse_source("!true"))
+    assert_equal false, value
+  end
+
+  test "#visit_unary_expr handles nested bool" do
+    value = Rlox::Interpreter.new.visit_unary_expr(parse_source("!!!false"))
+    assert_equal true, value
+  end
 end

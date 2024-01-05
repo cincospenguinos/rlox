@@ -20,11 +20,20 @@ module Rlox
       when :string_literal
         "#{token.string.gsub('"', '')}"
       else
-        raise InterpreterError, "\"#{literal_expr.to_s}\" does not match literal type!"
+        raise InterpreterError, "'#{literal_expr.to_s}' does not match literal type!"
       end
     end
 
     def visit_unary_expr(unary_expr)
+      right_value = evaluate(unary_expr.right_expression)
+      case unary_expr.operator_token.type
+      when :dash
+        -right_value
+      when :bang
+        !right_value
+      else
+        raise InterpreterError, "'#{unary_expr.to_s}' does not have valid unary operator!"
+      end
     end
 
     private
@@ -34,7 +43,11 @@ module Rlox
       return false if str == "false"
       return nil if str == "nil"
 
-      raise InterpreterError, "\"#{str}\" is not true, false, or nil!"
+      raise InterpreterError, "'#{str}' is not true, false, or nil!"
+    end
+
+    def evaluate(expression)
+      expression.accept(self)
     end
   end
 end
