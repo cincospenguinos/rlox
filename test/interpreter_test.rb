@@ -25,21 +25,21 @@ class InterpreterTest < Test::Unit::TestCase
   end
 
   test "#visit_literal_expr responds with true" do
-    expr = parse_source('true')
+    expr = parse_source("true")
     interpreter = Rlox::Interpreter.new
 
     assert_equal true, interpreter.visit_literal_expr(expr)
   end
 
   test "#visit_literal_expr responds with false" do
-    expr = parse_source('false')
+    expr = parse_source("false")
     interpreter = Rlox::Interpreter.new
 
     assert_equal false, interpreter.visit_literal_expr(expr)
   end
 
   test "#visit_literal_expr responds with nil" do
-    expr = parse_source('nil')
+    expr = parse_source("nil")
     interpreter = Rlox::Interpreter.new
 
     assert_equal nil, interpreter.visit_literal_expr(expr)
@@ -49,7 +49,7 @@ class InterpreterTest < Test::Unit::TestCase
     expr = parse_source("-977112")
     value = Rlox::Interpreter.new.visit_unary_expr(expr)
 
-    assert_equal -977112, value
+    assert_equal(-977_112, value)
   end
 
   test "#visit_unary_expr handles not bool" do
@@ -87,7 +87,7 @@ class InterpreterTest < Test::Unit::TestCase
 
   test "#visit_binary_expr handles subtraction" do
     value = Rlox::Interpreter.new.visit_binary_expr(parse_source("1 - 2"))
-    assert_equal -1, value
+    assert_equal(-1, value)
   end
 
   test "#visit_binary_expr handles multiplication" do

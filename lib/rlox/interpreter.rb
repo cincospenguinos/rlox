@@ -1,25 +1,17 @@
 # frozen_string_literal: true
+
 module Rlox
   class Interpreter
-    def initialize
-    end
+    ARITHMETIC_OPERATORS = %i[plus dash star slash].freeze
+    BOOL_TYPES = %i[false true nil].freeze
 
     def visit_binary_expr(binary_expr)
+      operator = binary_expr.operator_token.type
       left = evaluate(binary_expr.left_expression)
       right = evaluate(binary_expr.right_expression)
+      return evaluate_arithmetic_expression(operator, left, right) if ARITHMETIC_OPERATORS.include?(operator)
 
-      case binary_expr.operator_token.type
-      when :plus
-        left + right
-      when :dash
-        left - right
-      when :star
-        left * right
-      when :slash
-        left / right
-      else
-        raise InterpreterError, "'#{binary_expr.operator_token.to_s}' is not a valid operator!"
-      end
+      raise InterpreterError, "'#{expression.operator_token}' is not a valid operator!"
     end
 
     def visit_grouping_expr(grouping_expr)
@@ -28,15 +20,15 @@ module Rlox
 
     def visit_literal_expr(literal_expr)
       token = literal_expr.literal_value
-      return parse_unary_value(token.string) if %i[false true nil].include?(token.type)
+      return parse_unary_value(token.string) if BOOL_TYPES.include?(token.type)
 
       case token.type
       when :number_literal
         token.string.to_f
       when :string_literal
-        "#{token.string.gsub('"', '')}"
+        token.string.gsub('"', "").to_s
       else
-        raise InterpreterError, "'#{literal_expr.to_s}' does not match literal type!"
+        raise InterpreterError, "'#{literal_expr}' does not match literal type!"
       end
     end
 
@@ -48,7 +40,7 @@ module Rlox
       when :bang
         !right_value
       else
-        raise InterpreterError, "'#{unary_expr.to_s}' does not have valid unary operator!"
+        raise InterpreterError, "'#{unary_expr}' does not have valid unary operator!"
       end
     end
 
@@ -68,6 +60,15 @@ module Rlox
 
     def evaluate(expression)
       expression.accept(self)
+    end
+
+    def evaluate_arithmetic_expression(operation, left, right)
+      return left + right if operation == :plus
+      return left - right if operation == :dash
+      return left * right if operation == :star
+      return left / right if operation == :slash
+
+      raise InterpreterError, "'#{operation}' is not a valid operator!"
     end
   end
 end
