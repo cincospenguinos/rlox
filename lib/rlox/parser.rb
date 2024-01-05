@@ -2,7 +2,7 @@
 
 module Rlox
   class Parser
-    PRIMARY_EXPR_TYPES = %i[number_literal string_literal true false nil].freeze
+    PRIMARY_RULE_LITERALS = %i[number_literal string_literal true false nil].freeze
 
     attr_reader :tokens
 
@@ -11,8 +11,8 @@ module Rlox
       @current_index = 0
     end
 
-    def next_expression
-      equality_rule
+    def parse
+      expression_rule
     end
 
     def current_token
@@ -29,6 +29,7 @@ module Rlox
 
     def advance
       @current_index += 1
+      current_token
     end
 
     def current_matches?(*token_types)
@@ -38,6 +39,10 @@ module Rlox
     end
 
     private
+
+    def expression_rule
+      equality_rule
+    end
 
     def equality_rule
       binary_expr_rule(:comparison_rule, %i[equal_equal bang_equal].freeze)
@@ -85,8 +90,25 @@ module Rlox
     end
 
     def primary_rule
-      advance
-      LiteralExpr.new(previous_token)
+      if current_matches?(*PRIMARY_RULE_LITERALS)
+        advance
+        return LiteralExpr.new(previous_token)
+      end
+
+      if current_matches?(:left_paren)
+        advance
+        inner_expression = expression_rule
+        consume(:right_paren, 'No matching right paren found!')
+        return GroupingExpr.new(inner_expression)
+      end
+
+      # TODO: Raise here, right?
+    end
+
+    def consume(token_type, error_message)
+      return advance if current_matches?(:right_paren)
+
+      raise ParserError.new(error_message)
     end
   end
 end
