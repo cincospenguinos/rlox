@@ -10,13 +10,27 @@ module Rlox
     end
 
     def next_expression
-      factor_rule
+      term_rule
     end
 
     private
 
+    # TODO: term_rule and factor_rule have very similar implementations. Can we
+    # DRY them up somehow?
+    def term_rule
+      left_expr = factor_rule
+
+      while current_matches?(:plus, :dash) do
+        advance
+        operator = previous_token
+        right_expr = factor_rule
+        return BinaryExpr.new(left_expr, operator, right_expr)
+      end
+
+      left_expr
+    end
+
     def factor_rule
-      # byebug
       left_expr = unary_rule
 
       while current_matches?(:star, :slash) do

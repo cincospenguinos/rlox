@@ -21,6 +21,8 @@ require "test_helper"
 #                | "(" expression ")" ;
 
 class ParserTest < Test::Unit::TestCase
+  # TODO: Test upchucking on non-literal token
+
   test '#next_expression handles numeric literal' do
     tokens = Rlox::Scanner.new('123').scan_tokens
     assert tokens.size == 1
@@ -66,8 +68,6 @@ class ParserTest < Test::Unit::TestCase
     assert_equal expr.literal_value, Rlox::Token.new(type: :nil, string: 'nil')
   end
 
-  # TODO: Test upchucking on non-literal token
-
   test '#next_expression handles unary with negative sign' do
     tokens = Rlox::Scanner.new('-123').scan_tokens
     assert tokens.size == 2
@@ -104,5 +104,32 @@ class ParserTest < Test::Unit::TestCase
     expr = Rlox::Parser.new(tokens).next_expression
     assert expr.is_a?(Rlox::BinaryExpr)
     assert expr.operator_token.type == :star
+  end
+
+  test '#next_expression handles division' do
+    tokens = Rlox::Scanner.new('3/33').scan_tokens
+    assert tokens.size == 3
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::BinaryExpr)
+    assert expr.operator_token.type == :slash
+  end
+
+  test '#next_expression handles addition' do
+    tokens = Rlox::Scanner.new('1 + 1').scan_tokens
+    assert tokens.size == 3
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::BinaryExpr)
+    assert expr.operator_token.type == :plus
+  end
+
+  test '#next_expression handles subtraction' do
+    tokens = Rlox::Scanner.new('1 - 1').scan_tokens
+    assert tokens.size == 3
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::BinaryExpr)
+    assert expr.operator_token.type == :dash
   end
 end
