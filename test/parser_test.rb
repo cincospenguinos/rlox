@@ -66,6 +66,8 @@ class ParserTest < Test::Unit::TestCase
     assert_equal expr.literal_value, Rlox::Token.new(type: :nil, string: 'nil')
   end
 
+  # TODO: Test upchucking on non-literal token
+
   test '#next_expression handles unary with negative sign' do
     tokens = Rlox::Scanner.new('-123').scan_tokens
     assert tokens.size == 2
@@ -93,5 +95,14 @@ class ParserTest < Test::Unit::TestCase
     assert expr.operator_token.type == :bang
     assert expr.right_expression.is_a?(Rlox::UnaryExpr)
     assert expr.right_expression.operator_token.type == :bang
+  end
+
+  test '#next_expression handles multiplication' do
+    tokens = Rlox::Scanner.new('2 * 3').scan_tokens
+    assert tokens.size == 3
+
+    expr = Rlox::Parser.new(tokens).next_expression
+    assert expr.is_a?(Rlox::BinaryExpr)
+    assert expr.operator_token.type == :star
   end
 end

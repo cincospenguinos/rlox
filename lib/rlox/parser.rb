@@ -1,6 +1,7 @@
 module Rlox
   class Parser
     PRIMARY_EXPR_TYPES = %i(number_literal string_literal true false nil)
+
     attr_reader :tokens
 
     def initialize(tokens)
@@ -9,15 +10,29 @@ module Rlox
     end
 
     def next_expression
-      unary_rule
+      factor_rule
     end
 
     private
 
+    def factor_rule
+      # byebug
+      left_expr = unary_rule
+
+      while current_matches?(:star, :slash) do
+        advance
+        operator = previous_token
+        right_expr = unary_rule
+        return BinaryExpr.new(left_expr, operator, right_expr)
+      end
+
+      left_expr
+    end
+
     def unary_rule
       if current_matches?(:dash, :bang)
-        operator = current_token
-        @current_index += 1
+        advance
+        operator = previous_token
         right_expression = unary_rule
         return UnaryExpr.new(operator, right_expression)
       end
@@ -26,18 +41,29 @@ module Rlox
     end
 
     def primary_rule
+      advance
       LiteralExpr.new(previous_token)
     end
 
     def current_token
-      @tokens[@current_index]
+      tokens[@current_index]
     end
 
     def previous_token
-      @tokens[@current_index - 1]
+      tokens[@current_index - 1]
+    end
+
+    def at_end?
+      @current_index >= tokens.size
+    end
+
+    def advance
+      @current_index += 1
     end
 
     def current_matches?(*token_types)
+      return false if at_end?
+
       token_types.any? { |type| current_token.type == type }
     end
   end
