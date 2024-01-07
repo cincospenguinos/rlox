@@ -10,6 +10,14 @@ def scan_source(source_string)
   Rlox::Scanner.new(source_string).scan
 end
 
+def parse_source_expr(source_string)
+  # NOTE! parse_expr! does a partial parsing to an expression level. This
+  # really ought to be ameliorated into something a bit nicer (maybe a class
+  # that parses expressions that the main parser handles?) but in the meantime
+  # this is what we've got
+  Rlox::Parser.new(scan_source(source_string)).parse_expr!
+end
+
 def parse_source(source_string)
   Rlox::Parser.new(scan_source(source_string)).parse!
 end

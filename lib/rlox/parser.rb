@@ -18,6 +18,13 @@ module Rlox
     end
 
     def parse!
+      statement_expr_rule
+    end
+
+    ## parse_expr!
+    #
+    # Parses from an expression level, not a statement level
+    def parse_expr!
       expression_rule
     end
 
@@ -45,6 +52,12 @@ module Rlox
     end
 
     private
+
+    def statement_expr_rule
+      expr = expression_rule
+      consume(:semicolon, "Expect ';' after value.")
+      ExpressionStmt.new(expr)
+    end
 
     def expression_rule
       equality_rule

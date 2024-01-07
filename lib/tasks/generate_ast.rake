@@ -9,6 +9,7 @@ namespace :gen do
     StmtExprDef.new("Expr", "Literal", "literal_value"),
     StmtExprDef.new("Expr", "Unary", "operator_token, right_expression"),
     StmtExprDef.new("Stmt", "Expression", "expression"),
+    # StmtExprDef.new("Stmt", "Print", "expression"), # The author makes print a statement, not a function, to make it easier to do stuff. I'd rather put it in as a library, but I'm leaving this here in case we want it
   ].freeze
 
   GEN_FILE_HEADER = <<~FILE_HEADER
