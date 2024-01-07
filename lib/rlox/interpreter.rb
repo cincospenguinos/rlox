@@ -6,15 +6,11 @@ module Rlox
     COMPARISON_OPERATORS = %i[greater less greater_equal less_equal].freeze
     BOOL_TYPES = %i[false true nil].freeze
 
-    # TODO: We can't have separate interpret and evaluate methods. What other
-    # interface can we put together?
-    def interpret!(statements)
-      statements.each { |s| evaluate!(s) }
-      nil
-    end
+    def evaluate!(expr_or_statements)
+      return expr_or_statements.accept(self) if expr_or_statements.is_a?(Expr)
 
-    def evaluate!(expression)
-      expression.accept(self)
+      expr_or_statements.each { |s| evaluate(s.expression) }
+      nil
     end
 
     def evaluate(expression)
