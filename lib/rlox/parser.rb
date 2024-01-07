@@ -18,7 +18,13 @@ module Rlox
     end
 
     def parse!
-      statement_expr_rule
+      statements = []
+
+      until at_end? do
+        statements << statement_expr_rule
+      end
+
+      statements
     end
 
     ## parse_expr!
@@ -37,7 +43,7 @@ module Rlox
     end
 
     def at_end?
-      @current_index >= tokens.size
+      current_token.type == :EOF
     end
 
     def advance

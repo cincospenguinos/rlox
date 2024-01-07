@@ -206,8 +206,9 @@ class ParserTest < Test::Unit::TestCase
     tokens = scan_source("1 + 2;")
     assert tokens.size == 5
 
-    res = Rlox::Parser.new(tokens).parse!
-    assert res.is_a?(Rlox::ExpressionStmt)
-    assert res.expression.is_a?(Rlox::BinaryExpr)
+    statements = Rlox::Parser.new(tokens).parse!
+    assert_equal 1, statements.size
+    assert statements.first.is_a?(Rlox::ExpressionStmt)
+    assert statements.first.expression.is_a?(Rlox::BinaryExpr)
   end
 end
