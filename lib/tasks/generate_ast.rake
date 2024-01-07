@@ -1,11 +1,34 @@
-ALL_DEFS = {
-  "Expr": [
-    "Binary   : left_expression, operator_token, right_expression",
-    "Grouping : expression",
-    "Literal  : literal_value",
-    "Unary    : operator_token, right_expression"
-  ].freeze,
-}
+# frozen_string_literal: true
+
+require "ostruct"
+
+class StmtExprVars
+  attr_reader :instance_vars
+
+  def initialize(instance_vars)
+    @instance_vars = instance_vars
+  end
+
+  def list
+    instance_vars.join(", ")
+  end
+
+  def attr_string
+    str = instance_vars
+          .map { |i| ":#{i}" }
+          .join(", ")
+
+    "attr_reader #{str}"
+  end
+
+  def assignment_string
+    instance_vars
+      .map { |i| "    @#{i} = #{i}" }
+      .join("\n")
+  end
+end
+
+ALL_DEFS = []
 
 EXPRESSION_DEFS = [
   "Binary   : left_expression, operator_token, right_expression",
@@ -18,19 +41,24 @@ EXPRESSION_DEFS = [
 #
 # Creates string of class to print into file, extending base Expression class
 class ExprStmtClassGeneration
-  attr_accessor :base_class_name, :class_name, :instance_vars
+  attr_reader :instance_vars
+  attr_accessor :base_class_name, :class_name
 
   def initialize(base_class_name)
     @base_class_name = base_class_name
   end
 
+  def instance_vars=(instance_vars)
+    @instance_vars = StmtExprVars.new(instance_vars)
+  end
+
   def to_s
     <<~EXPRESSION_CLASS_STR
       class #{class_name}#{base_class_name} < #{base_class_name}
-        #{instance_var_attr_string}
+        #{instance_vars.attr_string}
 
-        def initialize(#{instance_vars.join(", ")})
-      #{instance_var_assignment_string}
+        def initialize(#{instance_vars.list})
+          #{instance_vars.assignment_string}
         end
 
         def accept(visitor)
@@ -55,20 +83,6 @@ class ExprStmtClassGeneration
       module Rlox
 
     FILE_HEADER
-  end
-
-  private
-
-  def instance_var_attr_string
-    str = instance_vars.map { |i| ":#{i}" }
-                       .join(", ")
-
-    "attr_reader #{str}"
-  end
-
-  def instance_var_assignment_string
-    instance_vars.map { |i| "    @#{i} = #{i}" }
-                 .join("\n")
   end
 end
 
