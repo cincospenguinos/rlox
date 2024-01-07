@@ -8,8 +8,8 @@ module Rlox
     def run(source)
       # TODO: Error handling!
       tokens = Scanner.new(source).scan
-      expression = Parser.new(tokens).parse
-      puts interpreter.evaluate!(expression)
+      statements = Parser.new(tokens).parse!
+      puts interpreter.evaluate!(statements).inspect
     end
 
     def run_file(filepath)
@@ -27,7 +27,7 @@ module Rlox
 
         run(line)
       end
-    rescue InterpreterError => e
+    rescue RloxError => e
       puts e
       run_prompt
     end
