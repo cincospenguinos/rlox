@@ -11,6 +11,8 @@ end
 
 require "rubocop/rake_task"
 
+Rake.add_rakelib "lib/tasks"
+
 RuboCop::RakeTask.new
 
 task default: %i[test rubocop]
