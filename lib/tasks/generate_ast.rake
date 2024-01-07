@@ -141,14 +141,16 @@ namespace :gen do
     module Rlox
   FILE_HEADER
 
+  def write(out_file, base_class)
+    out_file.puts GEN_FILE_HEADER
+    relevant_defs = ALL_DEFS.select { |d| d.base_class == "Expr" }
+    out_file.puts relevant_defs.first.base_class_str
+    relevant_defs.each { |gen| out_file.puts gen.to_s }
+    out_file.puts "end"
+  end
+
   desc "Generates Expr class definitions"
   task :expr do
-    File.open("lib/rlox/expression.rb", "w") do |f|
-      f.puts GEN_FILE_HEADER
-      relevant_defs = ALL_DEFS.select { |d| d.base_class == "Expr" }
-      f.puts relevant_defs.first.base_class_str
-      relevant_defs.each { |gen| f.puts gen.to_s }
-      f.puts "end"
-    end
+    File.open("lib/rlox/expression.rb", "w") { |f| write(f, "Expr") }
   end
 end
