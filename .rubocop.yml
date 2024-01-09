@@ -222,3 +222,8 @@ Metrics/ClassLength:
   Enabled: true
   Exclude:
     - test/*.rb
+
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+    - lib/tasks/*.rake
