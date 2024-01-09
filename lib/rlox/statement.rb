@@ -16,4 +16,17 @@ module Rlox
       visitor.visit_expression_stmt(self)
     end
   end
+
+  class VarStmt < Stmt
+    attr_reader :name, :initializer_expression
+
+    def initialize(name, initializer_expression)
+      @name = name
+      @initializer_expression = initializer_expression
+    end
+
+    def accept(visitor)
+      visitor.visit_var_stmt(self)
+    end
+  end
 end

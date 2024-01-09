@@ -3,13 +3,18 @@
 require "test_helper"
 
 # Our grammar is expanding to include this now
-# program        → statement* EOF ;
+# program        → declaration* EOF ;
+#
+# declaration    → varDecl
+#                | statement ;
 #
 # statement      → exprStmt
 #                | printStmt ;
-#
-# exprStmt       → expression ";" ;
-# printStmt      → "print" expression ";" ;
+# varDecl        → "var" IDENTIFIER ( "=" expression )? ";" ;
+# primary        → "true" | "false" | "nil"
+#                | NUMBER | STRING
+#                | "(" expression ")"
+#                | IDENTIFIER ;
 
 class ParserTest < Test::Unit::TestCase
   test "#parse_expr! upchucks when unable to create an expression" do
@@ -210,5 +215,37 @@ class ParserTest < Test::Unit::TestCase
     assert_equal 1, statements.size
     assert statements.first.is_a?(Rlox::ExpressionStmt)
     assert statements.first.expression.is_a?(Rlox::BinaryExpr)
+  end
+
+  test "#parse! handles variable declarations" do
+    tokens = scan_source("var foo;")
+    assert tokens.size == 4
+
+    statements = Rlox::Parser.new(tokens).parse!
+    assert_equal 1, statements.size
+    assert statements.first.is_a?(Rlox::VarStmt)
+    assert_equal "foo", statements.first.name.string
+  end
+
+  test "#parse! handles variable assignment" do
+    tokens = scan_source("var bar = 12;")
+    assert tokens.size == 6
+
+    statements = Rlox::Parser.new(tokens).parse!
+    assert_equal 1, statements.size
+    assert statements.first.is_a?(Rlox::VarStmt)
+    assert statements.first.initializer_expression.is_a?(Rlox::LiteralExpr)
+    assert_equal "bar", statements.first.name.string
+  end
+
+  test "#parse! handles both declaration and assignment" do
+    omit "We'll handle more complex stuff later"
+    tokens = scan_source("var foo; foo = 12;")
+    assert tokens.size == 8
+
+    statements = Rlox::Parser.new(tokens).parse!
+    assert_equal 2, statements.size
+    assert statements.first.is_a?(Rlox::VarStmt)
+    assert statements.last.is_a?(Rlox::VarStmt)
   end
 end

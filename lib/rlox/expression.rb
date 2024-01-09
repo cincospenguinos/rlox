@@ -55,4 +55,16 @@ module Rlox
       visitor.visit_unary_expr(self)
     end
   end
+
+  class VariableExpr < Expr
+    attr_reader :name
+
+    def initialize(name)
+      @name = name
+    end
+
+    def accept(visitor)
+      visitor.visit_variable_expr(self)
+    end
+  end
 end
