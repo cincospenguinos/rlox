@@ -4,10 +4,10 @@ module Rlox
   class ExpressionRuleResolver
     PRIMARY_RULE_LITERALS = %i[number_literal string_literal true false nil].freeze
 
-    attr_reader :parser
+    attr_reader :tokens
 
-    def initialize(parser)
-      @parser = parser
+    def initialize(tokens)
+      @tokens = tokens
     end
 
     def expression_rule
@@ -31,8 +31,8 @@ module Rlox
     end
 
     def unary_rule
-      if parser.current_matches?(:dash, :bang)
-        operator = parser.advance
+      if tokens.current_matches?(:dash, :bang)
+        operator = tokens.advance
         right_expression = unary_rule
         return UnaryExpr.new(operator, right_expression)
       end
@@ -41,12 +41,12 @@ module Rlox
     end
 
     def primary_rule
-      return LiteralExpr.new(parser.advance) if parser.current_matches?(*PRIMARY_RULE_LITERALS)
+      return LiteralExpr.new(tokens.advance) if tokens.current_matches?(*PRIMARY_RULE_LITERALS)
 
-      if parser.current_matches?(:left_paren)
-        parser.advance
+      if tokens.current_matches?(:left_paren)
+        tokens.advance
         inner_expression = expression_rule
-        parser.consume(:right_paren, "No matching right paren found!")
+        tokens.consume(:right_paren, "No matching right paren found!")
         return GroupingExpr.new(inner_expression)
       end
 
@@ -63,8 +63,8 @@ module Rlox
     def binary_expr_rule(higher_precedence_rule, types_to_match)
       left_expr = send(higher_precedence_rule)
 
-      if parser.current_matches?(*types_to_match)
-        operator = parser.advance
+      if tokens.current_matches?(*types_to_match)
+        operator = tokens.advance
         right_expr = send(higher_precedence_rule)
         return BinaryExpr.new(left_expr, operator, right_expr)
       end
@@ -73,35 +73,12 @@ module Rlox
     end
   end
 
-  class Parser
+  class ParserTokenPosition
     attr_reader :tokens
 
     def initialize(tokens)
       @tokens = tokens.freeze
       @current_index = 0
-    end
-
-    def parse
-      parse!
-    rescue ParserError
-      nil
-    end
-
-    def parse!
-      statements = []
-
-      until at_end? do
-        statements << declaration_rule
-      end
-
-      statements
-    end
-
-    ## parse_expr!
-    #
-    # Parses from an expression level, not a statement level
-    def parse_expr!
-      ExpressionRuleResolver.new(self).expression_rule
     end
 
     def current_token
@@ -127,10 +104,6 @@ module Rlox
       token_types.any? { |type| current_token.type == type }
     end
 
-    # TODO: Do we want #consume to be public? Or do we want a separate
-    # tokens object that keeps track of all that information, and pass
-    # a reference to that along to any resolution classes as part of this
-    # restructuring thing?
     def consume(token_type, error_message)
       if current_matches?(token_type)
         advance
@@ -139,31 +112,62 @@ module Rlox
 
       raise ParserError, error_message
     end
+  end
+
+  class Parser
+    attr_reader :tokens
+
+    def initialize(tokens)
+      @tokens = ParserTokenPosition.new(tokens)
+    end
+
+    def parse
+      parse!
+    rescue ParserError
+      nil
+    end
+
+    def parse!
+      statements = []
+
+      until tokens.at_end? do
+        statements << declaration_rule
+      end
+
+      statements
+    end
+
+    ## parse_expr!
+    #
+    # Parses from an expression level, not a statement level
+    def parse_expr!
+      ExpressionRuleResolver.new(tokens).expression_rule
+    end
 
     private
 
     def declaration_rule
-      return var_declaration_rule if current_matches?(:var)
+      return var_declaration_rule if tokens.current_matches?(:var)
 
       statement_expr_rule
     end
 
     def var_declaration_rule
-      advance
-      var_name = advance
+      tokens.advance
+      var_name = tokens.advance
       initializer_expression = nil
-      if current_matches?(:equal)
-        advance
-        initializer_expression = ExpressionRuleResolver.new(self).expression_rule
+      if tokens.current_matches?(:equal)
+        tokens.advance
+        initializer_expression = ExpressionRuleResolver.new(tokens).expression_rule
       end
 
-      consume(:semicolon, "Expect ';' after variable declaration")
+      tokens.consume(:semicolon, "Expect ';' after variable declaration")
       VarStmt.new(var_name, initializer_expression)
     end
 
     def statement_expr_rule
-      expr = ExpressionRuleResolver.new(self).expression_rule
-      consume(:semicolon, "Expect ';' after value.")
+      expr = ExpressionRuleResolver.new(tokens).expression_rule
+      tokens.consume(:semicolon, "Expect ';' after value.")
       ExpressionStmt.new(expr)
     end
   end
